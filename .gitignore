@@ -38,6 +38,17 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Capacitor / Android (machine-specific; keep android/ project in repo)
+android/.gradle
+android/app/build
+android/build
+android/local.properties
+android/*.iml
+android/captures
+android/keystore.properties
+android/*.jks
+android/*.keystore
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

@@ -9,7 +9,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy:prep": "node scripts/verify-deploy-prep.mjs",
+    "android:sync": "cap sync android",
+    "android:open": "cap open android",
+    "android:run": "cap run android",
+    "android:apk": "cd android && gradlew.bat assembleDebug"
   },
   "dependencies": {
     "@babel/parser": "^7.28.5",
@@ -112,6 +117,10 @@
     "zustand": "^5.0.9"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.3.0",
+    "@capacitor/cli": "^8.3.0",
+    "@capacitor/core": "^8.3.0",
+    "@capacitor/splash-screen": "^8.0.1",
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

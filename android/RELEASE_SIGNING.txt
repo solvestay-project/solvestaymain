@@ -1,0 +1,21 @@
+Release builds (AAB/APK for Play Store)
+======================================
+
+Use JDK 17 or 21 (Android Studio: Settings > Build > Gradle > Gradle JDK). If Gradle reports
+"Unsupported class file major version", your JAVA_HOME is newer than Gradle supports.
+
+1. Create a keystore (once):
+   keytool -genkey -v -keystore release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias solvestay
+
+2. Copy keystore.properties.example to keystore.properties and set paths/passwords.
+   storeFile must be relative to the android/ folder (e.g. release-key.jks) or an absolute path.
+
+3. In Android Studio: Build > Generate Signed Bundle / APK, or from CLI:
+   cd android
+   ./gradlew bundleRelease
+
+4. Play Console requires the App Bundle (AAB) for new apps. Upload the file under android/app/build/outputs/bundle/release/
+
+5. Privacy policy URL and payment declarations (e.g. Razorpay) must match your Play listing.
+
+Deep link scheme (optional): solvestay://open — handle in the web app if you add native routing later.
