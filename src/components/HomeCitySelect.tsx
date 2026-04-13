@@ -120,7 +120,7 @@ export function HomeCitySelect({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            'w-full justify-between font-normal border-0 bg-muted/50 hover:bg-muted/70 rounded-lg',
+            'w-full min-w-0 justify-between font-normal border-0 bg-muted/50 hover:bg-muted/70 rounded-lg',
             heightClass,
             triggerClassName
           )}

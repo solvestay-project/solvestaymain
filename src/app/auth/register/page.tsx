@@ -2,6 +2,7 @@
 
 import { useState, Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -42,6 +43,9 @@ const registerSchema = z
   });
 
 type RegisterForm = z.infer<typeof registerSchema>;
+
+const AUTH_PANEL_IMAGE =
+  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80";
 
 function RegisterContent() {
   const router = useRouter();
@@ -118,12 +122,24 @@ function RegisterContent() {
 
   return (
     <div className="min-h-screen flex">
-      <div className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-primary to-accent relative overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+      <div className="relative hidden min-h-screen overflow-hidden lg:flex lg:w-1/2">
+        <Image
+          src={AUTH_PANEL_IMAGE}
+          alt=""
+          fill
+          priority
+          className="object-cover"
+          sizes="50vw"
+        />
+        <div
+          className="absolute inset-0 bg-linear-to-br from-primary/92 via-primary/80 to-accent/88"
+          aria-hidden
+        />
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute left-10 top-20 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
+          <div className="absolute bottom-20 right-10 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
         </div>
-        <div className="relative z-10 flex flex-col justify-center p-12 text-white">
+        <div className="relative z-10 flex min-h-screen flex-col justify-center p-12 text-white">
           <Link href="/" className="flex items-center gap-2 mb-12">
             <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur">
               <Home className="w-6 h-6" />
@@ -159,11 +175,11 @@ function RegisterContent() {
         </div>
       </div>
 
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 overflow-y-auto">
+      <div className="flex w-full items-start justify-center overflow-y-auto p-6 sm:p-8 lg:w-1/2">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md py-8"
+          className="w-full max-w-md pb-10 pt-6 sm:pt-8 lg:pt-12"
         >
           <Link
             href="/"

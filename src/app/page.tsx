@@ -286,7 +286,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <section className="relative min-h-[92vh] flex flex-col justify-center overflow-hidden">
+      <section className="relative min-h-[92vh] flex flex-col justify-center overflow-x-clip overflow-y-visible">
         <div className="absolute inset-0">
           <Image
             src={HOME_HERO_IMAGE}
@@ -302,12 +302,12 @@ export default function HomePage() {
           />
         </div>
 
-        <div className="relative z-10 max-w-[120rem] mx-auto px-6 sm:px-8 lg:px-12 pt-28 pb-24 w-full">
+        <div className="relative z-10 mx-auto w-full min-w-0 max-w-[120rem] px-4 sm:px-6 lg:px-12 pt-28 pb-24">
           <motion.div
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
-            className="text-center max-w-6xl mx-auto"
+            className="mx-auto w-full min-w-0 max-w-6xl text-center"
           >
             <motion.div variants={fadeIn}>
               <Badge
@@ -340,10 +340,10 @@ export default function HomePage() {
 
             <motion.div
               variants={fadeIn}
-              className="w-full max-w-5xl mx-auto rounded-full bg-white p-2 sm:p-2.5 shadow-2xl ring-1 ring-black/5"
+              className="mx-auto box-border w-full min-w-0 max-w-5xl rounded-2xl bg-white p-2 shadow-2xl ring-1 ring-black/5 sm:rounded-3xl sm:p-2.5 lg:rounded-full"
             >
-              <div className="flex flex-col gap-2 lg:flex-row lg:items-stretch lg:gap-0 lg:divide-x lg:divide-border rounded-full overflow-hidden lg:rounded-none lg:overflow-visible bg-white lg:bg-transparent">
-                <div className="w-full lg:w-[13.5rem] shrink-0 px-2 lg:px-3 py-1 lg:py-0 flex items-center">
+              <div className="flex min-w-0 flex-col gap-2 overflow-hidden rounded-xl bg-white sm:rounded-2xl lg:flex-row lg:items-stretch lg:gap-0 lg:divide-x lg:divide-border lg:rounded-none lg:overflow-visible lg:bg-transparent">
+                <div className="flex w-full min-w-0 shrink-0 items-center px-2 py-1 lg:w-[13.5rem] lg:px-3 lg:py-0">
                   <HomeCitySelect
                     value={selectedCity}
                     onChange={setSelectedCity}
@@ -352,15 +352,15 @@ export default function HomePage() {
                     triggerClassName="!bg-transparent hover:!bg-muted/40 rounded-xl lg:rounded-full border-0 shadow-none"
                   />
                 </div>
-                <div className="flex-1 min-w-0 relative px-2 lg:px-4 py-1 lg:py-0 flex items-center">
-                  <Search className="absolute left-5 lg:left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground z-10 pointer-events-none" />
+                <div className="relative flex min-w-0 flex-1 items-center px-2 py-1 lg:px-4 lg:py-0">
+                  <Search className="pointer-events-none absolute left-5 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground lg:left-5" />
                   <Input
                     placeholder={
                       selectedCity
                         ? `Search area, locality or property in ${selectedCity}`
                         : "Search area, locality or property in Bangalore"
                     }
-                    className="pl-12 h-12 sm:h-14 text-base border-0 bg-muted/40 rounded-xl lg:rounded-full"
+                    className="h-12 min-w-0 rounded-xl border-0 bg-muted/40 pl-12 text-base sm:h-14 lg:rounded-full"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onFocus={() =>
@@ -397,10 +397,10 @@ export default function HomePage() {
                     </ul>
                   )}
                 </div>
-                <div className="px-2 pb-1 lg:p-0 flex items-center shrink-0">
+                <div className="flex w-full min-w-0 shrink-0 items-stretch px-2 pb-1 lg:w-auto lg:p-0">
                   <Button
                     size="lg"
-                    className="h-12 sm:h-14 w-full lg:w-auto lg:min-w-[10.5rem] rounded-xl lg:rounded-full px-8 shadow-md"
+                    className="h-12 w-full rounded-xl px-8 shadow-md sm:h-14 lg:w-auto lg:min-w-[10.5rem] lg:rounded-full"
                     onClick={handleSearch}
                   >
                     <Search className="w-5 h-5 mr-2" />
@@ -410,25 +410,28 @@ export default function HomePage() {
               </div>
             </motion.div>
 
-            <motion.div variants={fadeIn} className="mt-6 flex flex-wrap justify-center gap-2">
-              <span className="text-sm text-white/80 w-full sm:w-auto sm:mr-1">
-                Popular in Bangalore:
-              </span>
-              {popularBangaloreSearches.map((item) => (
-                <button
-                  key={item.label}
-                  type="button"
-                  onClick={() => handleSearch({ city: item.city, q: item.q })}
-                  className="text-sm px-4 py-2 rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-sm hover:bg-white hover:text-primary transition-colors"
-                >
-                  {item.label}
-                </button>
-              ))}
+            <motion.div
+              variants={fadeIn}
+              className="mx-auto mt-6 w-full min-w-0 max-w-5xl space-y-3 text-center"
+            >
+              <p className="text-sm text-white/80">Popular in Bangalore:</p>
+              <div className="flex flex-wrap justify-center gap-2 px-0.5">
+                {popularBangaloreSearches.map((item) => (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={() => handleSearch({ city: item.city, q: item.q })}
+                    className="rounded-full border border-white/25 bg-white/10 px-3 py-2 text-sm text-white backdrop-blur-sm transition-colors hover:bg-white hover:text-primary sm:px-4"
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
             </motion.div>
 
             <motion.div
               variants={fadeIn}
-              className="flex flex-wrap justify-center gap-10 sm:gap-14 mt-16"
+              className="mt-16 flex flex-wrap justify-center gap-6 px-2 sm:gap-10 md:gap-14"
             >
               {stats.map((stat) => (
                 <div key={stat.label} className="text-center min-w-[7rem]">
