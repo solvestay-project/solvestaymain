@@ -1,5 +1,6 @@
 "use client";
 
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -53,7 +54,7 @@ const propertyTypes = [
     icon: Home,
     label: "Houses",
     count: "2,500+",
-    href: "/properties?property_type=house",
+    href: "/houses-for-rent-in-bangalore",
   },
   {
     icon: Building2,
@@ -201,6 +202,22 @@ const stats = [
 /** Hero backdrop — modern home at dusk (reference-style full-bleed) */
 const HOME_HERO_IMAGE =
   "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2400&q=80";
+
+export const metadata: Metadata = {
+  title:
+    "Zero Brokerage Flats, Houses & PGs for Rent in India | Solvestay",
+  description:
+    "Find verified houses, flats, PGs and commercial properties for rent with zero brokerage. Connect directly with property owners in top Indian cities and get owner contact for just ₹49.",
+  openGraph: {
+    title:
+      "Solvestay – Find Your Perfect Home with Zero Brokerage",
+    description:
+      "Search verified owner-listed houses, flats, PGs and commercial properties for rent across India. No brokers, no hidden fees – contact owners directly on Solvestay.",
+    url: "https://www.solvestay.com/",
+    siteName: "Solvestay",
+    type: "website",
+  },
+};
 
 const bangaloreAreas = [
   { name: "Whitefield", tag: "Key area", search: "Whitefield" },
@@ -401,7 +418,7 @@ export default function HomePage() {
                   <Button
                     size="lg"
                     className="h-12 w-full rounded-xl px-8 shadow-md sm:h-14 lg:w-auto lg:min-w-[10.5rem] lg:rounded-full"
-                    onClick={handleSearch}
+                    onClick={() => handleSearch()}
                   >
                     <Search className="w-5 h-5 mr-2" />
                     Search

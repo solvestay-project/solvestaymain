@@ -1,5 +1,6 @@
 "use client";
 
+import type { Metadata } from "next";
 import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -65,6 +66,12 @@ const PropertyMap = dynamic(
     ),
   },
 );
+
+export const metadata: Metadata = {
+  title: "Flats, Houses & PGs for Rent in India | Solvestay Properties",
+  description:
+    "Browse verified owner-listed houses, flats, PGs and commercial properties for rent across top cities in India. Filter by city, locality, budget, BHK and amenities with zero brokerage.",
+};
 
 const propertyTypeIcons = {
   house: Home,

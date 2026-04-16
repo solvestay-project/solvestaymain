@@ -154,6 +154,22 @@ const GALLERY_TILE_ASPECTS = [
   "aspect-[2/3]",
 ] as const;
 
+function createPropertySlug(p: Pick<Property, "title" | "city" | "state" | "property_type" | "bedrooms">) {
+  const parts = [
+    p.bedrooms ? `${p.bedrooms} bhk` : "",
+    p.property_type || "property",
+    "for rent",
+    p.city,
+    p.state,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  return parts
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 const sampleProperty: Property = {
   id: "1",
   owner_id: "1",
@@ -558,12 +574,49 @@ export default function PropertyDetailPage({
   const blockPublicBuyer = isSoldOut && !isListingOwner;
   const images = property.images || sampleProperty.images;
   const nearbyList = normalizeNearbyPlaces(property.nearby_places);
+  const canonicalSlug = createPropertySlug({
+    title: property.title,
+    city: property.city,
+    state: property.state,
+    property_type: property.property_type,
+    bedrooms: property.bedrooms,
+  });
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": ["Product", property.property_type === "apartment" ? "Apartment" : "House"],
+    name: property.title,
+    description: property.description,
+    image: images,
+    sku: property.id,
+    url: typeof window !== "undefined" ? window.location.href : undefined,
+    offers: {
+      "@type": "Offer",
+      price: property.price,
+      priceCurrency: "INR",
+      availability:
+        property.listing_availability === "sold_out"
+          ? "https://schema.org/SoldOut"
+          : "https://schema.org/InStock",
+    },
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: property.address,
+      addressLocality: property.city,
+      addressRegion: property.state,
+      postalCode: property.pincode,
+      addressCountry: "IN",
+    },
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
       <div className="pt-20">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <Button
             variant="ghost"
