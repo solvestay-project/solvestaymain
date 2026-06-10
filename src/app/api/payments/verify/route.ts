@@ -77,6 +77,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create subscription' }, { status: 500 })
     }
 
+    const { data: transaction, error: txError } = await supabase
+      .from('transactions')
+      .select('metadata')
+      .eq('id', transaction_id)
+      .single()
+
+    const walletApplied = Number(
+      (transaction?.metadata as { wallet_applied?: number } | null)?.wallet_applied ?? 0,
+    )
+
+    if (walletApplied > 0) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('referral_wallet_balance_inr')
+        .eq('id', user_id)
+        .single()
+
+      const currentWallet = Number(profile?.referral_wallet_balance_inr ?? 0)
+      await supabase
+        .from('profiles')
+        .update({
+          referral_wallet_balance_inr: Math.max(0, currentWallet - walletApplied),
+        })
+        .eq('id', user_id)
+    }
+
     await supabase
       .from('transactions')
       .update({ 

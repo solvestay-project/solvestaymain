@@ -48,7 +48,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const amountPaise = plan.price * 100
+    const walletBalance = Number(user.referral_wallet_balance_inr ?? 0)
+    const maxWalletUsable = Math.max(0, plan.price - 1)
+    const walletApplied = Math.min(walletBalance, maxWalletUsable)
+    const chargeAmount = plan.price - walletApplied
+    const amountPaise = chargeAmount * 100
     const receipt = `ss_${user_id.replace(/-/g, '').slice(0, 12)}_${Date.now()}`.slice(
       0,
       40,
@@ -90,11 +94,11 @@ export async function POST(request: NextRequest) {
       .insert({
         user_id,
         razorpay_order_id: order.id,
-        amount: plan.price,
+        amount: chargeAmount,
         currency: 'INR',
         status: 'pending',
         description: `${plan.name} Subscription`,
-        metadata: { plan_type, plan_name: plan.name },
+        metadata: { plan_type, plan_name: plan.name, wallet_applied: walletApplied },
       })
       .select()
       .single()
@@ -119,6 +123,8 @@ export async function POST(request: NextRequest) {
         email: user.email,
         contact: user.phone || '',
       },
+      wallet_applied: walletApplied,
+      charge_amount: chargeAmount,
       notes: {
         plan_type,
         user_id,

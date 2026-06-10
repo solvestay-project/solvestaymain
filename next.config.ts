@@ -55,10 +55,8 @@ const LOADER = path.resolve(
 );
 
 const nextConfig: NextConfig = {
-  api: {
-    bodyParser: {
-      sizeLimit: "500mb",
-    },
+  experimental: {
+    instrumentationHook: true,
   },
 
   images: {

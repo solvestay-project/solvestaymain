@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -47,16 +47,31 @@ type RegisterForm = z.infer<typeof registerSchema>;
 const AUTH_PANEL_IMAGE =
   "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80";
 
+const REFERRAL_STORAGE_KEY = "solvestay_referral_code";
+
 function RegisterContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const roleParam = searchParams.get("role") as UserRole | null;
+  const refParam = searchParams.get("ref");
   const { setUser } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
   const [selectedRole, setSelectedRole] = useState<UserRole>(
     roleParam === "owner" ? "owner" : "customer"
   );
+
+  useEffect(() => {
+    const fromUrl = refParam?.trim().toUpperCase();
+    if (fromUrl) {
+      setReferralCode(fromUrl);
+      sessionStorage.setItem(REFERRAL_STORAGE_KEY, fromUrl);
+      return;
+    }
+    const stored = sessionStorage.getItem(REFERRAL_STORAGE_KEY);
+    if (stored) setReferralCode(stored.toUpperCase());
+  }, [refParam]);
 
   const {
     register,
@@ -107,6 +122,22 @@ function RegisterContent() {
 
         if (profile) {
           setUser(profile);
+        }
+
+        const codeToAttribute =
+          referralCode ||
+          sessionStorage.getItem(REFERRAL_STORAGE_KEY)?.trim().toUpperCase();
+        if (codeToAttribute) {
+          try {
+            await fetch("/api/referrals/attribute", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ referral_code: codeToAttribute }),
+            });
+            sessionStorage.removeItem(REFERRAL_STORAGE_KEY);
+          } catch {
+            /* non-blocking */
+          }
         }
 
         toast.success("Account created successfully!");

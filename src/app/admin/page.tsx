@@ -108,6 +108,10 @@ export default function AdminDashboard() {
               <p className="text-sm font-medium text-slate-900">Manage Users</p>
               <p className="text-xs text-slate-500 mt-1">View and edit user roles</p>
             </Link>
+            <Link href="/admin/reports" className="p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors text-left border border-slate-200">
+              <p className="text-sm font-medium text-slate-900">Listing reports</p>
+              <p className="text-xs text-slate-500 mt-1">User flags on properties</p>
+            </Link>
             <Link href="/" className="p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors text-left border border-slate-200">
               <p className="text-sm font-medium text-slate-900">View Site</p>
               <p className="text-xs text-slate-500 mt-1">See the public website</p>

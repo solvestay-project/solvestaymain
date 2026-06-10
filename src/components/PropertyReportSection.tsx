@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { useAuthStore } from "@/lib/store";
+import { Button } from "@/components/ui/button";
 
 const REPORT_REASONS = [
   "Listed by Broker",
@@ -19,8 +22,13 @@ type Props = {
 
 export function PropertyReportSection({ propertyId, propertyTitle }: Props) {
   const [pending, setPending] = useState<ReportReason | null>(null);
+  const user = useAuthStore((s) => s.user);
 
   const submit = async (reason: ReportReason) => {
+    if (!user) {
+      toast.error("Sign in to report a listing");
+      return;
+    }
     setPending(reason);
     try {
       const res = await fetch("/api/properties/report", {
@@ -46,6 +54,20 @@ export function PropertyReportSection({ propertyId, propertyTitle }: Props) {
       setPending(null);
     }
   };
+
+  if (!user) {
+    return (
+      <div className="rounded-lg border border-dashed border-muted-foreground/40 bg-muted/20 px-4 py-4 sm:px-5 sm:py-5">
+        <p className="text-sm text-muted-foreground">
+          Sign in to report incorrect information on this listing. Our team
+          reviews every report.
+        </p>
+        <Button asChild className="mt-3" size="sm" variant="secondary">
+          <Link href="/auth/login">Sign in</Link>
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-lg border border-dashed border-muted-foreground/40 bg-muted/20 px-4 py-4 sm:px-5 sm:py-5">

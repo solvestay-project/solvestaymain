@@ -20,8 +20,32 @@ export interface Profile {
   notification_sms: boolean
   notification_push: boolean
   last_seen_at: string | null
+  referral_code?: string | null
+  referred_by?: string | null
+  referral_points?: number
+  referral_points_redeemed?: number
+  referral_wallet_balance_inr?: number
   created_at: string
   updated_at: string
+}
+
+export interface ReferralEvent {
+  id: string
+  referrer_id: string
+  referred_user_id: string
+  event_type: string
+  points_awarded: number
+  created_at: string
+  referred_user?: Pick<Profile, 'id' | 'full_name' | 'email' | 'created_at'>
+}
+
+export interface ReferralRedemption {
+  id: string
+  user_id: string
+  points_used: number
+  amount_inr: number
+  status: string
+  created_at: string
 }
 
 export type PropertyType = 'house' | 'apartment' | 'pg' | 'land' | 'villa' | 'commercial' | 'plot'

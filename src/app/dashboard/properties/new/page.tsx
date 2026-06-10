@@ -73,6 +73,10 @@ const propertySchema = z.object({
     (val) => (val === "" || val === undefined ? undefined : Number(val)),
     z.number().min(1, "Please enter a valid price")
   ),
+  security_deposit: z.preprocess(
+    (val) => (val === "" || val === undefined ? undefined : Number(val)),
+    z.number().min(0, "Please enter a valid deposit").optional()
+  ),
   price_negotiable: z.boolean(),
   area_sqft: z.preprocess(
     (val) => (val === "" || val === undefined ? undefined : Number(val)),
@@ -211,6 +215,7 @@ export default function NewPropertyPage() {
 
   const watchedValues = watch();
   const propertyType = watchedValues.property_type;
+  const listingType = watchedValues.listing_type;
 
   const addNearbyPlace = () => {
     const t = nearbyInput.trim();
@@ -323,6 +328,9 @@ export default function NewPropertyPage() {
         break;
       case 2:
         fieldsToValidate = ["title", "description", "price"];
+        if (listingType === "rent" || listingType === "lease") {
+          fieldsToValidate.push("security_deposit");
+        }
         break;
       case 3:
         fieldsToValidate = ["address", "city", "state", "pincode"];
@@ -669,6 +677,29 @@ export default function NewPropertyPage() {
                       </div>
                     )}
                   </div>
+
+                  {(listingType === "rent" || listingType === "lease") && (
+                    <div>
+                      <Label htmlFor="security_deposit">Deposit (₹)</Label>
+                      <div className="relative mt-2">
+                        <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          id="security_deposit"
+                          type="number"
+                          placeholder="Enter deposit amount"
+                          className="pl-10"
+                          {...register("security_deposit", {
+                            valueAsNumber: true,
+                          })}
+                        />
+                      </div>
+                      {errors.security_deposit && (
+                        <p className="text-sm text-destructive mt-1">
+                          {errors.security_deposit.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
 
                   <div className="flex items-center gap-2">
                     <Checkbox
@@ -1162,6 +1193,16 @@ export default function NewPropertyPage() {
                             ₹{watchedValues.price?.toLocaleString()}
                           </p>
                         </div>
+                        {(listingType === "rent" || listingType === "lease") && (
+                          <div>
+                            <span className="text-sm text-muted-foreground">
+                              Deposit
+                            </span>
+                            <p className="font-medium">
+                              ₹{watchedValues.security_deposit?.toLocaleString?.()}
+                            </p>
+                          </div>
+                        )}
                         <div>
                           <span className="text-sm text-muted-foreground">
                             Area

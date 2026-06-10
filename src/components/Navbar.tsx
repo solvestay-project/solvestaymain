@@ -39,6 +39,7 @@ import {
   ShieldCheck,
   Calendar,
   Headphones,
+  Gift,
 } from "lucide-react";
 
 export function Navbar() {
@@ -137,6 +138,15 @@ export function Navbar() {
                 >
                   Pricing
                 </Link>
+                <Link
+                  href="/refer-and-earn"
+                  className="px-4 py-2 text-sm font-medium text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
+                >
+                  <span className="flex items-center gap-2">
+                    <Gift className="w-4 h-4" />
+                    Refer & Earn
+                  </span>
+                </Link>
                 {showPrioritySupportNav && (
                   <Link
                     href="/support/priority"
@@ -148,6 +158,20 @@ export function Navbar() {
                     </span>
                   </Link>
                 )}
+              </nav>
+            )}
+
+            {hideCustomerBrowseNav && (
+              <nav className="hidden lg:flex items-center gap-1">
+                <Link
+                  href="/refer-and-earn"
+                  className="px-4 py-2 text-sm font-medium text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
+                >
+                  <span className="flex items-center gap-2">
+                    <Gift className="w-4 h-4" />
+                    Refer & Earn
+                  </span>
+                </Link>
               </nav>
             )}
 
@@ -312,6 +336,12 @@ export function Navbar() {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
+                        <Link href="/refer-and-earn">
+                          <Gift className="mr-2 h-4 w-4" />
+                          Refer & Earn
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
                         <Link href="/dashboard/settings">
                           <Settings className="mr-2 h-4 w-4" />
                           Settings
@@ -419,6 +449,14 @@ export function Navbar() {
                       <CreditCard className="w-5 h-5" />
                       Pricing
                     </Link>
+                    <Link
+                      href="/refer-and-earn"
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Gift className="w-5 h-5" />
+                      Refer & Earn
+                    </Link>
                     {showPrioritySupportNav && (
                       <Link
                         href="/support/priority"
@@ -433,6 +471,16 @@ export function Navbar() {
                 )}
                 {!hideCustomerBrowseNav && (
                   <div className="border-t my-4" />
+                )}
+                {hideCustomerBrowseNav && (
+                  <Link
+                    href="/refer-and-earn"
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Gift className="w-5 h-5" />
+                    Refer & Earn
+                  </Link>
                 )}
                 {user ? (
                   <>

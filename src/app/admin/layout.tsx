@@ -12,7 +12,8 @@ import {
   Menu,
   X,
   ShieldCheck,
-  Home
+  Home,
+  Flag,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -22,6 +23,7 @@ const navItems = [
   { name: 'Overview', href: '/admin', icon: LayoutDashboard },
   { name: 'Users', href: '/admin/users', icon: Users },
   { name: 'Properties', href: '/admin/properties', icon: Building2 },
+  { name: 'Reports', href: '/admin/reports', icon: Flag },
   { name: 'Verifications', href: '/admin/verify', icon: CheckCircle2 },
 ]
 

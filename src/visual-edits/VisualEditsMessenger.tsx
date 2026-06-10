@@ -403,14 +403,7 @@ export default function HoverReceiver() {
   const [hoverBoxes, setHoverBoxes] = useState<Box[]>([]);
   const [focusBox, setFocusBox] = useState<Box>(null);
   const [focusedElementId, setFocusedElementId] = useState<string | null>(null);
-  const [isVisualEditMode, setIsVisualEditMode] = useState(() => {
-    // Initialize from localStorage if available
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem(VISUAL_EDIT_MODE_KEY);
-      return stored === "true";
-    }
-    return false;
-  });
+  const [isVisualEditMode, setIsVisualEditMode] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [resizeHandle, setResizeHandle] = useState<string | null>(null);
   const [resizeStart, setResizeStart] = useState<{
@@ -451,12 +444,29 @@ export default function HoverReceiver() {
   // Timeout refs for clearing persistent font map
   const persistentFontTimeouts = useRef<Map<string, number>>(new Map());
 
+  // Restore visual edit mode from storage on client only.
+  useEffect(() => {
+    try {
+      const stored =
+        typeof window !== "undefined" &&
+        typeof window.localStorage?.getItem === "function"
+          ? window.localStorage.getItem(VISUAL_EDIT_MODE_KEY)
+          : null;
+      if (stored === "true") setIsVisualEditMode(true);
+    } catch {
+      // ignore
+    }
+  }, []);
+
   // Keep ref in sync with state and persist to localStorage
   useEffect(() => {
     isVisualEditModeRef.current = isVisualEditMode;
     // Persist to localStorage
-    if (typeof window !== "undefined") {
-      localStorage.setItem(VISUAL_EDIT_MODE_KEY, String(isVisualEditMode));
+    if (
+      typeof window !== "undefined" &&
+      typeof window.localStorage?.setItem === "function"
+    ) {
+      window.localStorage.setItem(VISUAL_EDIT_MODE_KEY, String(isVisualEditMode));
     }
   }, [isVisualEditMode]);
 
@@ -478,9 +488,12 @@ export default function HoverReceiver() {
 
       // Restore focused element after a short delay to ensure DOM is ready
       setTimeout(() => {
-        if (typeof window !== "undefined") {
+        if (
+          typeof window !== "undefined" &&
+          typeof window.localStorage?.getItem === "function"
+        ) {
           // Restore focused element
-          const focusedData = localStorage.getItem(FOCUSED_ELEMENT_KEY);
+          const focusedData = window.localStorage.getItem(FOCUSED_ELEMENT_KEY);
           if (focusedData) {
             try {
               const { id } = JSON.parse(focusedData);
@@ -1534,12 +1547,16 @@ export default function HoverReceiver() {
         setFocusTag(tagName);
 
         // Save focused element info to localStorage
-        if (hitId && typeof window !== "undefined") {
+        if (
+          hitId &&
+          typeof window !== "undefined" &&
+          typeof window.localStorage?.setItem === "function"
+        ) {
           const focusedElementData = {
             id: hitId,
             tag: tagName,
           };
-          localStorage.setItem(
+          window.localStorage.setItem(
             FOCUSED_ELEMENT_KEY,
             JSON.stringify(focusedElementData)
           );
@@ -1755,8 +1772,11 @@ export default function HoverReceiver() {
           setHoverTag(null);
 
           // Clear focused element from localStorage
-          if (typeof window !== "undefined") {
-            localStorage.removeItem(FOCUSED_ELEMENT_KEY);
+          if (
+            typeof window !== "undefined" &&
+            typeof window.localStorage?.removeItem === "function"
+          ) {
+            window.localStorage.removeItem(FOCUSED_ELEMENT_KEY);
           }
 
           // Notify parent that focus was cleared
@@ -1828,9 +1848,13 @@ export default function HoverReceiver() {
         setIsVisualEditMode(newMode);
 
         // Clear localStorage if visual edit mode is being turned off
-        if (!newMode && typeof window !== "undefined") {
-          localStorage.removeItem(VISUAL_EDIT_MODE_KEY);
-          localStorage.removeItem(FOCUSED_ELEMENT_KEY);
+        if (
+          !newMode &&
+          typeof window !== "undefined" &&
+          typeof window.localStorage?.removeItem === "function"
+        ) {
+          window.localStorage.removeItem(VISUAL_EDIT_MODE_KEY);
+          window.localStorage.removeItem(FOCUSED_ELEMENT_KEY);
         }
 
         // Send acknowledgement back to parent so it knows we received the mode change
