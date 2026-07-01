@@ -39,6 +39,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(errUrl);
     }
 
+    // Keep user on reset flow until they choose a new password
+    if (nextPath === "/auth/reset-password") {
+      response.cookies.set("password_recovery", "1", {
+        path: "/",
+        maxAge: 60 * 15,
+        sameSite: "lax",
+        httpOnly: true,
+        secure: url.protocol === "https:",
+      });
+    }
+
     return response;
   }
 

@@ -39,7 +39,8 @@ function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [canReset, setCanReset] = useState(false);
-  const [timedOut, setTimedOut] = useState(false);
+  const [checking, setChecking] = useState(true);
+  const [bootstrapError, setBootstrapError] = useState<string | null>(null);
 
   const {
     register,
@@ -53,28 +54,78 @@ function ResetPasswordForm() {
     const supabase = createClient();
     let cancelled = false;
 
-    const hashHasRecovery =
-      typeof window !== "undefined" &&
-      window.location.hash.includes("type=recovery");
-
-    if (searchParams.get("recovery") === "1" || hashHasRecovery) {
+    async function markRecoveryReady() {
+      if (cancelled) return;
       setCanReset(true);
+      setChecking(false);
+      setBootstrapError(null);
+      document.cookie = "password_recovery=1; path=/; max-age=900; SameSite=Lax";
+    }
+
+    async function bootstrap() {
+      const url = new URL(window.location.href);
+      const code = url.searchParams.get("code");
+      const recoveryParam = url.searchParams.get("recovery") === "1";
+
+      const hash = window.location.hash.startsWith("#")
+        ? window.location.hash.slice(1)
+        : "";
+      const hashParams = new URLSearchParams(hash);
+      const hashRecovery = hashParams.get("type") === "recovery";
+
+      if (recoveryParam || hashRecovery) {
+        await markRecoveryReady();
+      }
+
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) {
+          if (!cancelled) {
+            setBootstrapError(error.message);
+            setChecking(false);
+          }
+          return;
+        }
+        window.history.replaceState({}, "", "/auth/reset-password?recovery=1");
+        await markRecoveryReady();
+        return;
+      }
+
+      if (hashRecovery && hashParams.get("access_token")) {
+        const access_token = hashParams.get("access_token")!;
+        const refresh_token = hashParams.get("refresh_token") ?? "";
+        const { error } = await supabase.auth.setSession({
+          access_token,
+          refresh_token,
+        });
+        if (error) {
+          if (!cancelled) {
+            setBootstrapError(error.message);
+            setChecking(false);
+          }
+          return;
+        }
+        window.history.replaceState({}, "", "/auth/reset-password?recovery=1");
+        await markRecoveryReady();
+        return;
+      }
+
+      if (!cancelled) {
+        setChecking(false);
+      }
     }
 
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (cancelled) return;
       if (event === "PASSWORD_RECOVERY") {
-        setCanReset(true);
+        void markRecoveryReady();
       }
     });
 
-    const timeoutId = window.setTimeout(() => {
-      if (!cancelled) setTimedOut(true);
-    }, 8000);
+    void bootstrap();
 
     return () => {
       cancelled = true;
-      window.clearTimeout(timeoutId);
       sub.subscription.unsubscribe();
     };
   }, [searchParams]);
@@ -87,6 +138,10 @@ function ResetPasswordForm() {
         password: data.password,
       });
       if (error) throw error;
+
+      await fetch("/api/auth/clear-recovery", { method: "POST" });
+      document.cookie = "password_recovery=; path=/; max-age=0; SameSite=Lax";
+
       toast.success("Password updated. You can sign in now.");
       await supabase.auth.signOut();
       router.push("/auth/login");
@@ -98,17 +153,25 @@ function ResetPasswordForm() {
     }
   };
 
+  if (checking) {
+    return (
+      <div className="space-y-6 flex flex-col items-center py-8">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" aria-hidden />
+        <p className="text-muted-foreground text-sm text-center">
+          Verifying your reset link…
+        </p>
+      </div>
+    );
+  }
+
   if (!canReset) {
     return (
       <div className="space-y-6">
         <p className="text-muted-foreground text-sm">
-          {timedOut
-            ? "This reset link is invalid or expired. Request a new one below."
-            : "Checking your reset link… If nothing happens, open the link from your email again."}
+          {bootstrapError
+            ? bootstrapError
+            : "This reset link is invalid or expired. Request a new one below."}
         </p>
-        {!timedOut && (
-          <Loader2 className="w-8 h-8 animate-spin text-primary" aria-hidden />
-        )}
         <Button variant="outline" asChild className="w-full">
           <Link href="/auth/forgot-password">Request new link</Link>
         </Button>

@@ -214,14 +214,12 @@ function PropertiesContent() {
     }
   }, [user, properties]);
 
-  const fetchProperties = async (
-    overrides?: {
-      city?: string;
-      area?: string;
-      propertyType?: PropertyType | "";
-      listingType?: ListingType | "";
-    },
-  ) => {
+  const fetchProperties = async (overrides?: {
+    city?: string;
+    area?: string;
+    propertyType?: PropertyType | "";
+    listingType?: ListingType | "";
+  }) => {
     setIsLoading(true);
     try {
       const city =
@@ -448,11 +446,11 @@ function PropertiesContent() {
   // Render Nearby toggle inside main JSX tree
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen  bg-background">
       <Navbar />
 
       <div className="pt-20">
-        <div className="bg-gradient-to-b from-primary/5 via-primary/[0.02] to-transparent py-10 sm:py-12 border-b">
+        <div className="bg-linear-to-b from-primary/5 via-primary/2 to-transparent py-10 sm:py-12 border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 className="text-3xl sm:text-4xl font-bold mb-2">
               Find Your Perfect Property
@@ -569,7 +567,7 @@ function PropertiesContent() {
                       <SheetHeader>
                         <SheetTitle>Filter Properties</SheetTitle>
                       </SheetHeader>
-                      <div className="py-6 space-y-8">
+                      <div className="py-6 px-3   space-y-8">
                         <div>
                           <h3 className="font-medium mb-4">Property Type</h3>
                           <div className="grid grid-cols-3 gap-2">
@@ -823,10 +821,9 @@ function PropertiesContent() {
                       );
                       params.delete("listing_type");
                       const qs = params.toString();
-                      router.replace(
-                        qs ? `/properties?${qs}` : "/properties",
-                        { scroll: false },
-                      );
+                      router.replace(qs ? `/properties?${qs}` : "/properties", {
+                        scroll: false,
+                      });
                     }}
                   />
                 </Badge>

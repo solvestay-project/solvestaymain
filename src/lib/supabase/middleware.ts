@@ -33,6 +33,29 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   const pathname = request.nextUrl.pathname;
+  const recoveryPending =
+    request.cookies.get("password_recovery")?.value === "1";
+  const authCode = request.nextUrl.searchParams.get("code");
+
+  // Email reset links sometimes land on site root with ?code= — send to reset page
+  if (authCode && pathname === "/") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/reset-password";
+    return NextResponse.redirect(url);
+  }
+
+  // Password reset link creates a session — stay on reset page until done
+  if (
+    user &&
+    recoveryPending &&
+    pathname !== "/auth/reset-password" &&
+    !pathname.startsWith("/api/auth/")
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/reset-password";
+    url.searchParams.set("recovery", "1");
+    return NextResponse.redirect(url);
+  }
 
   if (user && pathname === "/") {
     const { data: profile } = await supabase

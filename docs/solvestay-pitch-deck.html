@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Solvestay — Investor Pitch Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #4338ca;
+      --primary-light: #eef2ff;
+      --foreground: #1e1b4b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --background: #fafafc;
+      --white: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "DM Sans", sans-serif; color: var(--foreground); background: #ccc; }
+    h1, h2, .serif { font-family: "Instrument Serif", serif; font-weight: 400; }
+    .slide {
+      width: 13.333in; height: 7.5in; padding: 0.55in 0.65in;
+      background: var(--background); page-break-after: always; break-after: page;
+      overflow: hidden; position: relative;
+    }
+    .slide.dark { background: var(--primary); color: var(--white); }
+    .slide-num { position: absolute; bottom: 0.35in; right: 0.65in; font-size: 9pt; color: var(--muted); }
+    .slide.dark .slide-num { color: rgba(255,255,255,0.45); }
+    .badge { display: inline-block; font-size: 9pt; font-weight: 600; padding: 4px 12px; border-radius: 999px; background: var(--primary-light); color: var(--primary); margin-bottom: 14px; }
+    .slide.dark .badge { background: rgba(255,255,255,0.15); color: white; }
+    h2 { font-size: 28pt; line-height: 1.15; margin-bottom: 0.28in; }
+    .slide.dark h2 { color: white; }
+    .subtitle { font-size: 11pt; color: var(--muted); margin-bottom: 0.22in; line-height: 1.5; }
+    .lead { font-size: 12pt; color: var(--primary); font-weight: 600; margin-top: 0.2in; }
+    table { width: 100%; border-collapse: collapse; font-size: 8.5pt; margin-top: 0.12in; }
+    th, td { border: 1px solid var(--border); padding: 7px 10px; text-align: left; vertical-align: top; }
+    th { background: #f1f5f9; font-weight: 600; }
+    tr.highlight td { background: var(--primary-light); font-weight: 600; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.18in; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.15in; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.12in; }
+    .card { border: 1px solid var(--border); border-radius: 10px; padding: 0.14in; background: var(--white); }
+    .card h3 { font-size: 10pt; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+    .card p { font-size: 8.5pt; color: var(--muted); line-height: 1.45; }
+    ul.compact { list-style: none; padding: 0; }
+    ul.compact li { font-size: 8.5pt; color: var(--muted); padding: 3px 0 3px 14px; position: relative; line-height: 1.4; }
+    ul.compact li::before { content: "•"; color: var(--primary); font-weight: 700; position: absolute; left: 0; }
+    .stat { text-align: center; padding: 0.16in; border: 1px solid var(--border); border-radius: 10px; background: white; }
+    .stat .val { font-size: 20pt; font-weight: 700; color: var(--primary); }
+    .stat .lbl { font-size: 8pt; color: var(--muted); margin-top: 4px; }
+    .flow { display: flex; gap: 8px; margin: 0.18in 0; }
+    .flow-step { flex: 1; text-align: center; padding: 0.14in; border: 1px solid var(--border); border-radius: 10px; background: white; font-size: 9pt; font-weight: 500; }
+    .flow-step span { display: block; font-size: 7.5pt; color: var(--primary); font-weight: 700; margin-bottom: 4px; }
+    .callout { margin-top: 0.18in; padding: 0.16in 0.2in; border: 2px solid rgba(67,56,202,0.2); border-radius: 10px; background: var(--primary-light); }
+    .callout strong { display: block; font-size: 11pt; margin-bottom: 4px; }
+    .callout p { font-size: 9pt; color: var(--muted); }
+    .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .feature { display: flex; gap: 6px; font-size: 8pt; padding: 6px 8px; background: #f8fafc; border-radius: 6px; }
+    .feature .ck { color: var(--primary); font-weight: 700; }
+    .cover-logo { width: 56px; height: 56px; border-radius: 14px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 24pt; margin: 0 auto 0.3in; }
+    .cover-title { font-size: 52pt; text-align: center; margin-bottom: 0.12in; }
+    .cover-tag { font-size: 16pt; text-align: center; opacity: 0.9; max-width: 7in; margin: 0 auto 0.35in; line-height: 1.4; }
+    .cover-foot { text-align: center; font-size: 9pt; opacity: 0.5; margin-top: 0.5in; }
+    .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 0.25in; }
+    .why-item { display: flex; gap: 10px; font-size: 8.5pt; align-items: flex-start; }
+    .why-num { width: 22px; height: 22px; border-radius: 50%; background: var(--primary-light); color: var(--primary); font-size: 8pt; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .closing-big { font-size: 64pt; text-align: center; margin: 0.2in 0; }
+    .closing-quote { font-size: 16pt; text-align: center; opacity: 0.9; max-width: 6.5in; margin: 0 auto 0.25in; }
+    .closing-box { background: rgba(255,255,255,0.12); border-radius: 12px; padding: 0.2in 0.3in; max-width: 5in; margin: 0.3in auto; text-align: center; }
+    @page { size: 13.333in 7.5in; margin: 0; }
+  </style>
+</head>
+<body>
+
+<section class="slide dark">
+  <div class="cover-logo">⌂</div>
+  <div class="badge" style="display:block;text-align:center;width:fit-content;margin:0 auto 0.2in;">Investor Pitch · Seed Round</div>
+  <h1 class="cover-title serif">Solvestay</h1>
+  <p class="cover-tag">India's transparent property platform — zero brokerage, direct owner access</p>
+  <p style="text-align:center;font-size:12pt;opacity:0.85;">Find homes. Skip brokers. Deal direct.</p>
+  <p class="cover-foot">solvestay@gmail.com · solvestay.com</p>
+  <span class="slide-num">1 / 18</span>
+</section>
+
+<section class="slide">
+  <h2 class="serif">The Problem</h2>
+  <p class="subtitle">Renting and buying in India is broken — users pay brokers for access, not value.</p>
+  <table>
+    <tr><th>Pain point</th><th>Reality</th></tr>
+    <tr><td>Brokerage tax</td><td>1–2 months rent or 1–2% on sale — even when brokers add little value</td></tr>
+    <tr><td>Fake / stale listings</td><td>Duplicate photos, bait pricing, "already rented" after you call</td></tr>
+    <tr><td>No transparency</td><td>Owner identity hidden until you pay intermediaries</td></tr>
+    <tr><td>Fragmented search</td><td>Houses, PGs, commercial — different apps, different rules</td></tr>
+    <tr><td>Time waste</td><td>Students & migrants spend weeks on WhatsApp groups and broker chains</td></tr>
+  </table>
+  <p class="lead">Users don't want another listing site — they want trust + direct access + fair pricing.</p>
+  <span class="slide-num">2 / 18</span>
+</section>
+
+<section class="slide">
+  <h2 class="serif">The Solution</h2>
+  <p class="subtitle">Solvestay connects seekers directly with verified property owners.</p>
+  <div class="flow">
+    <div class="flow-step"><span>STEP 1</span>Browse verified listings</div>
+    <div class="flow-step"><span>STEP 2</span>Unlock owner contact (affordable pass)</div>
+    <div class="flow-step"><span>STEP 3</span>Chat, visit & deal direct</div>
+  </div>
+  <div class="callout">
+    <strong>We monetize discovery, not the transaction.</strong>
+    <p>Owners list free. Seekers pay short-term passes for contact access. Zero brokerage on rent or sale.</p>
+  </div>
+  <span class="slide-num">3 / 18</span>
+</section>
+
+<section class="slide">
+  <h2 class="serif">Product — Live Today</h2>
+  <div class="feature-grid">
+    <div class="feature"><span class="ck">✓</span> Multi-category: houses, apartments, PG, commercial, land</div>
+    <div class="feature"><span class="ck">✓</span> Mandatory owner document verification</div>
+    <div class="feature"><span class="ck">✓</span> 360° panoramic virtual tours</div>
+    <div class="feature"><span class="ck">✓</span> Interactive geo maps + nearby landmarks</div>
+    <div class="feature"><span class="ck">✓</span> Contact reveal: phone, WhatsApp, email</div>
+    <div class="feature"><span class="ck">✓</span> In-app messaging customer ↔ owner</div>
+    <div class="feature"><span class="ck">✓</span> Visit scheduling & status tracking</div>
+    <div class="feature"><span class="ck">✓</span> Dedicated PG listing wizard</div>
+    <div class="feature"><span class="ck">✓</span> Favorites & compare up to 4 properties</div>
+    <div class="feature"><span class="ck">✓</span> User listing reports + admin moderation</div>
+    <div class="feature"><span class="ck">✓</span> Refer & Earn: 50 pts → ₹50 at 500 pts</div>
+    <div class="feature"><span class="ck">✓</span> Razorpay — UPI, cards, wallets</div>
+  </div>
+  <span class="slide-num">4 / 18</span>
+</section>
+
+<section class="slide">
+  <h2 class="serif">Business Model</h2>
+  <p class="subtitle">Revenue from subscription passes — not brokerage.</p>
+  <table>
+    <tr><th>Plan</th><th>Price</th><th>Duration</th><th>Contacts</th><th>Audience</th></tr>
+    <tr><td>Lite (1-Day)</td><td>₹99</td><td>24 hours</td><td>5</td><td>Quick trials, urgent movers</td></tr>
+    <tr><td>Relax (Weekly)</td><td>₹199</td><td>7 days</td><td>20</td><td>Active property hunters</td></tr>
+    <tr><td>Freedom (Monthly)</td><td>₹499</td><td>30 days</td><td>20 + extras</td><td>Serious search, price insights</td></tr>
+  </table>
+  <div class="grid-2" style="margin-top:0.15in;">
+    <div class="card"><h3>Current revenue</h3><ul class="compact"><li>Subscription passes (primary)</li><li>Refer & Earn viral acquisition</li><li>Referral wallet credits at checkout</li></ul></div>
+    <div class="card"><h3>Planned revenue</h3><ul class="compact"><li>Featured listings / owner boosts</li><li>Premium AI Discover & FindMode</li><li>B2B PG operator dashboards</li></ul></div>
+  </div>
+  <span class="slide-num">5 / 18</span>
+</section>
+
+<section class="slide">
+  <h2 class="serif">Market Opportunity</h2>
+  <div class="grid-4" style="margin-bottom:0.18in;">
+    <div class="stat"><div class="val">30M+</div><div class="lbl">Urban rental households</div></div>
+    <div class="stat"><div class="val">₹50K Cr+</div><div class="lbl">Brokerage market (annual)</div></div>
+    <div class="stat"><div class="val">10M+</div><div class="lbl">Students & PG seekers</div></div>
+    <div class="stat"><div class="val">20+</div><div class="lbl">Target cities (roadmap)</div></div>
+  </div>
+  <div class="grid-3">
+    <div class="card"><h3>TAM</h3><p>All India residential discovery & brokerage displacement</p></div>
+    <div class="card"><h3>SAM</h3><p>Urban rent + PG in 20 tier-1/2 cities</p></div>
+    <div class="card"><h3>SOM (Y1–2)</h3><p>Bangalore → Hyderabad, Pune — verified owners + paying seekers</p></div>
+  </div>
+  <span class="slide-num">6 / 18</span>
+</section>
+
+<section class="slide">
+  <h2 class="serif">Competitive Landscape</h2>
+  <table style="font-size:7.5pt;">
+    <tr><th>Platform</th><th>Brokerage</th><th>Direct contact</th><th>Verified owners</th><th>PG depth</th><th>Entry price</th></tr>
+    <tr><td>MagicBricks / 99acres</td><td>Often via agents</td><td>Lead forms</td><td>Partial</td><td>Basic</td><td>Ad/lead model</td></tr>
+    <tr><td>NoBroker</td><td>Zero (positioned)</td><td>Yes</td><td>Yes</td><td>Moderate</td><td>₹999+ plans</td></tr>
+    <tr><td>Housing.com</td><td>Mixed</td><td>Indirect</td><td>Partial</td><td>Moderate</td><td>Free + ads</td></tr>
+    <tr><td>WhatsApp / FB</td><td>Unregulated</td><td>Yes but risky</td><td>None</td><td>None</td><td>Free, unsafe</td></tr>
+    <tr class="highlight"><td>Solvestay</td><td>₹0 always</td><td>Phone/WhatsApp/chat</td><td>Mandatory</td><td>Dedicated wizard</td><td>From ₹99</td></tr>
+  </table>
+  <p class="lead" style="text-align:center;margin-top:0.2in;">Position: Maximum transparency × Lowest entry price</p>
+  <span class="slide-num">7 / 18</span>
+</section>
+
+<section class="slide">
+  <h2 class="serif">Why We Win</h2>
+  <div class="why-grid">
+    <div class="why-item"><span class="why-num">1</span>Zero brokerage — revenue from passes, not inflating rent</div>
+    <div class="why-item"><span class="why-num">2</span>Lowest entry: ₹99/day pass vs ₹999+ competitors</div>
+    <div class="why-item"><span class="why-num">3</span>Owner verification gate — quality supply, not spam</div>
+    <div class="why-item"><span class="why-num">4</span>PG-native product — room types, mess, rules, gender filters</div>
+    <div class="why-item"><span class="why-num">5</span>360° tours + maps + nearby landmarks</div>
+    <div class="why-item"><span class="why-num">6</span>Full journey: browse → reveal → chat → visit</div>
+    <div class="why-item"><span class="why-num">7</span>Refer & Earn — WhatsApp-native viral loop</div>
+    <div class="why-item"><span class="why-num">8</span>Sold-out status — less ghost inventory</div>
+    <div class="why-item"><span class="why-num">9</span>Admin trust layer — reports, verification, approval</div>
+    <div class="why-item"><span class="why-num">10</span>AI Discover + FindMode — location-intelligent search</div>
+  </div>
+  <span class="slide-num">8 / 18</span>
+</section>
+
+<section class="slide">
+  <h2 class="serif">Go-To-Market</h2>
+  <div class="grid-3">
+    <div class="card"><h3>Supply (owners)</h3><ul class="compact"><li>Free listing + verification badge</li><li>Owner referrals via Refer & Earn</li><li>PG/hostel operator partnerships</li><li>SEO city landing pages</li></ul></div>
+    <div class="card"><h3>Demand (seekers)</h3><ul class="compact"><li>₹99/day pass vs month-long broker fees</li><li>WhatsApp referral share links</li><li>College & corporate relocation</li><li>Zero-brokerage content marketing</li></ul></div>
+    <div class="card"><h3>Retention</h3><ul class="compact"><li>Favorites, chat, visit pipeline</li><li>New match alerts by city</li><li>Upgrade: Lite → Relax → Freedom</li></ul></div>
+  </div>
+  <span class="slide-num">9 / 18</span>
+</section>
+
+<section class="slide">
+  <h2 class="serif">Customer Personas</h2>
+  <table>
+    <tr><th>Persona</th><th>Need</th><th>Solvestay value</th></tr>
+    <tr><td>Arjun, 24 — IT pro</td><td>1BHK near metro, no broker</td><td>Map + nearby + direct WhatsApp</td></tr>
+    <tr><td>Priya, 21 — student</td><td>PG with mess, female-only</td><td>Dedicated PG listing flow</td></tr>
+    <tr><td>Rajesh, 45 — landlord</td><td>Serious tenants, no broker cut</td><td>Free verified listing + visits</td></tr>
+    <tr><td>Anita, 32 — family</td><td>3BHK rent, compare options</td><td>Favorites, comparison, 360° tours</td></tr>
+  </table>
+  <span class="slide-num">10 / 18</span>
+</section>
+
+<section class="slide">
+  <h2 class="serif">Technology</h2>
+  <div class="grid-2">
+    <ul class="compact" style="padding-top:0.1in;">
+      <li>Next.js + React — fast SEO & mobile web</li>
+      <li>Supabase — PostgreSQL, auth, realtime</li>
+      <li>Razorpay — UPI-native India payments</li>
+      <li>Leaflet maps — geo-tagged properties</li>
+      <li>Image/360 uploads + doc verification</li>
+    </ul>
+    <div class="card"><h3>Why it matters</h3><p>Low burn, fast iteration, API-ready for mobile app (React Native / Flutter) on the same backend.</p></div>
+  </div>
+  <span class="slide-num">11 / 18</span>
+</section>
+
+<section class="slide">
+  <h2 class="serif">Trust & Safety</h2>
+  <div class="grid-2" style="gap:8px;">
+    <div class="card">Owner document verification before listing</div>
+    <div class="card">Admin approval queue for new properties</div>
+    <div class="card">User reporting on suspicious listings</div>
+    <div class="card">Sold-out / availability status</div>
+    <div class="card">Secure Razorpay checkout</div>
+    <div class="card">Subscription-gated, logged contact reveals</div>
+  </div>
+  <p class="lead serif" style="text-align:center;font-size:18pt;margin-top:0.25in;">Trust is the product, not a feature checkbox.</p>
+  <span class="slide-num">12 / 18</span>
+</section>
+
+<section class="slide">
+  <div class="badge">Q2–Q3 · Roadmap</div>
+  <h2 class="serif">AI Discover</h2>
+  <p class="subtitle" style="font-style:italic;">"Tell us your life, we find your home."</p>
+  <ul class="compact">
+    <li>Natural language search: 2BHK under ₹25k near Whitefield metro, pet-friendly</li>
+    <li>AI ranks listings by fit score — budget, commute, amenities</li>
+    <li>Personalized daily digest: 3 new homes match your profile</li>
+    <li>Fair rent indicator using locality price benchmarks</li>
+    <li>Smart alerts when underpriced listings appear</li>
+  </ul>
+  <div class="callout"><strong>Investor angle</strong><p>Moves Solvestay from directory → intelligent advisor — higher retention & premium tier pricing.</p></div>
+  <span class="slide-num">13 / 18</span>
+</section>
+
+<section class="slide">
+  <div class="badge">Q3–Q4 · Flagship differentiator</div>
+  <h2 class="serif">FindMode — Unique Feature</h2>
+  <p class="subtitle">Turn on FindMode → discover homes & shops around you in real time.</p>
+  <table>
+    <tr><th>Feature</th><th>Description</th></tr>
+    <tr><td>Location radar</td><td>GPS shows listings within X km radius</td></tr>
+    <tr><td>Walk / drive mode</td><td>Map updates as user moves — properties near me now</td></tr>
+    <tr><td>POI layers</td><td>Schools, metro, hospitals, groceries overlaid</td></tr>
+    <tr><td>Shop discovery</td><td>Commercial units & shops nearby, not just homes</td></tr>
+    <tr><td>Smart ping</td><td>"A new 2BHK just listed 400m from you"</td></tr>
+  </table>
+  <p class="subtitle" style="margin-top:0.12in;">Monetization: FindMode + AI Discover in Freedom+ or ₹99/week add-on</p>
+  <span class="slide-num">14 / 18</span>
+</section>
+
+<section class="slide">
+  <h2 class="serif">Product Roadmap</h2>
+  <table>
+    <tr><th>Phase</th><th>Timeline</th><th>Deliverables</th></tr>
+    <tr><td>Phase 1 — Core</td><td>Done ✓</td><td>Listings, PG, verify, pay, chat, visits, referrals</td></tr>
+    <tr><td>Phase 2 — Growth</td><td>0–6 mo</td><td>Mobile app, more cities, featured listings</td></tr>
+    <tr><td>Phase 3 — AI Discover</td><td>6–9 mo</td><td>NLP search, match scoring, price insights</td></tr>
+    <tr><td>Phase 4 — FindMode</td><td>9–12 mo</td><td>GPS radar, POI layers, shop discovery</td></tr>
+    <tr><td>Phase 5 — Platform</td><td>12–18 mo</td><td>PG chain API, enterprise dashboards</td></tr>
+  </table>
+  <span class="slide-num">15 / 18</span>
+</section>
+
+<section class="slide">
+  <h2 class="serif">Financial Projections</h2>
+  <table>
+    <tr><th>Year</th><th>Paying users/mo</th><th>ARPU</th><th>MRR</th><th>Annual revenue</th></tr>
+    <tr><td>Y1</td><td>2,000</td><td>₹180</td><td>₹3.6L</td><td>₹43L</td></tr>
+    <tr><td>Y2</td><td>15,000</td><td>₹220</td><td>₹33L</td><td>₹3.9Cr</td></tr>
+    <tr><td>Y3</td><td>60,000</td><td>₹250</td><td>₹1.5Cr</td><td>₹18Cr</td></tr>
+  </table>
+  <div class="grid-2" style="margin-top:0.12in;">
+    <div class="card"><h3>Cost structure</h3><p>Cloud, payment fees (~2%), marketing, eng, verification ops</p></div>
+    <div class="card"><h3>Path to profit</h3><p>Free supply → referral CAC → repeat passes during 4–6 week search cycles</p></div>
+  </div>
+  <span class="slide-num">16 / 18</span>
+</section>
+
+<section class="slide">
+  <h2 class="serif">The Team</h2>
+  <table style="margin-top:0.35in;font-size:11pt;">
+    <tr><th>Name</th><th>Role</th><th>Background</th></tr>
+    <tr><td>Tirumalesha E</td><td>Co-Founder</td><td>Full Stack Developer</td></tr>
+    <tr><td>K Prajwal</td><td>Co-Founder</td><td>Full Stack Developer</td></tr>
+  </table>
+  <div class="callout" style="margin-top:0.4in;">
+    <strong>Built in-house</strong>
+    <p>End-to-end product — listings, payments, owner verification, chat, referrals, and admin — shipped by a lean founding team.</p>
+  </div>
+  <span class="slide-num">17 / 18</span>
+</section>
+
+<section class="slide dark">
+  <p class="closing-big serif">₹99</p>
+  <p class="closing-quote">The broker took ₹30,000. We take ₹99.</p>
+  <p style="text-align:center;opacity:0.85;font-size:11pt;max-width:5.5in;margin:0 auto;">Zero brokerage · Verified owners · Direct contact · AI-powered future</p>
+  <div class="closing-box">
+    <p style="font-weight:700;font-size:12pt;margin-bottom:6px;">Raising ₹4–5 Lakh pre-seed</p>
+    <p style="font-size:9pt;opacity:0.75;">40% Product & AI · 30% Growth · 20% Ops · 10% Legal</p>
+  </div>
+  <p style="text-align:center;font-size:11pt;font-weight:600;">solvestay@gmail.com · solvestay.com</p>
+  <p style="text-align:center;font-size:9pt;opacity:0.5;margin-top:8px;">Join us in building India's most trusted way to find a home</p>
+  <span class="slide-num">18 / 18</span>
+</section>
+
+</body>
+</html>
