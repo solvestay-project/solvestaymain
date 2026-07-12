@@ -215,9 +215,9 @@ export default function HomePageClient() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
-  const [areaOptions, setAreaOptions] = useState<{ id: string; text: string }[]>(
-    [],
-  );
+  const [areaOptions, setAreaOptions] = useState<
+    { id: string; text: string }[]
+  >([]);
   const [showAreaSuggestions, setShowAreaSuggestions] = useState(false);
 
   const defaultSearchCity = "Bangalore";
@@ -296,10 +296,7 @@ export default function HomePageClient() {
             className="object-cover object-center"
             sizes="100vw"
           />
-          <div
-            className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/50 to-background"
-            aria-hidden
-          />
+          <div className="absolute inset-0 bg-black/55" aria-hidden />
         </div>
 
         <div className="relative z-10 mx-auto w-full min-w-0 max-w-[120rem] px-4 sm:px-6 lg:px-12 pt-28 pb-24">
@@ -314,7 +311,7 @@ export default function HomePageClient() {
                 variant="secondary"
                 className="mb-6 px-4 py-2 text-sm font-medium border border-white/25 bg-white/10 text-white backdrop-blur-md shadow-sm"
               >
-                <Sparkles className="w-4 h-4 mr-2 text-indigo-200" />
+                <Sparkles className="w-4 h-4 mr-2 text-accent" />
                 Zero Brokerage Property Platform
               </Badge>
             </motion.div>
@@ -324,7 +321,7 @@ export default function HomePageClient() {
               className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight mb-6 text-white drop-shadow-md"
             >
               Find Your{" "}
-              <span className="font-serif italic text-indigo-100">Perfect</span>
+              <span className="font-serif italic text-accent">Perfect</span>
               <br />
               Home Today
             </motion.h1>
@@ -335,7 +332,7 @@ export default function HomePageClient() {
             >
               Connect directly with property owners. No brokers, no hidden fees.
               Get owner contact for just{" "}
-              <span className="text-indigo-100 font-semibold">₹49</span>.
+              <span className="text-accent font-semibold">₹49</span>.
             </motion.p>
 
             <motion.div
@@ -380,7 +377,8 @@ export default function HomePageClient() {
                           onMouseDown={(e) => {
                             e.preventDefault();
                             setSearchQuery(area.text);
-                            if (!selectedCity) setSelectedCity(defaultSearchCity);
+                            if (!selectedCity)
+                              setSelectedCity(defaultSearchCity);
                             setAreaOptions([]);
                             setShowAreaSuggestions(false);
                           }}
@@ -444,7 +442,7 @@ export default function HomePageClient() {
           </motion.div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-36 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none z-[1]" />
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-background pointer-events-none z-[1]" />
       </section>
 
       <section className="py-20 bg-muted/40">
@@ -496,7 +494,7 @@ export default function HomePageClient() {
             >
               Everything You Need to
               <br />
-              <span className="text-gradient font-serif italic">
+              <span className="text-accent font-serif italic">
                 Find Your Home
               </span>
             </motion.h2>
@@ -504,8 +502,8 @@ export default function HomePageClient() {
               variants={fadeIn}
               className="text-muted-foreground text-lg max-w-2xl mx-auto"
             >
-              We&apos;ve built India&apos;s most transparent property platform with
-              features designed to make your search effortless.
+              We&apos;ve built India&apos;s most transparent property platform
+              with features designed to make your search effortless.
             </motion.p>
           </motion.div>
 
@@ -526,7 +524,7 @@ export default function HomePageClient() {
                   className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform ${
                     fi % 2 === 0
                       ? "bg-primary/12"
-                      : "bg-indigo-100/90 dark:bg-primary/15"
+                      : "bg-accent/15 dark:bg-primary/15"
                   }`}
                 >
                   <feature.icon className="w-6 h-6 text-primary" />
@@ -559,7 +557,7 @@ export default function HomePageClient() {
             >
               Explore Properties in
               <br />
-              <span className="text-gradient font-serif italic">
+              <span className="text-accent font-serif italic">
                 Key Bangalore Areas
               </span>
             </motion.h2>
@@ -602,8 +600,7 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      <section className="py-20 lg:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 hero-gradient" />
+      <section className="py-20 lg:py-32 relative overflow-hidden bg-muted/40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             initial="hidden"
@@ -623,7 +620,7 @@ export default function HomePageClient() {
             >
               Affordable Plans for
               <br />
-              <span className="text-gradient font-serif italic">Everyone</span>
+              <span className="text-accent font-serif italic">Everyone</span>
             </motion.h2>
             <motion.p
               variants={fadeIn}
@@ -647,26 +644,34 @@ export default function HomePageClient() {
                 variants={fadeIn}
                 className={`relative p-8 rounded-2xl ${
                   plan.popular
-                    ? "bg-gradient-to-br from-primary to-accent text-primary-foreground scale-105 shadow-2xl"
+                    ? "border-2 border-accent bg-primary text-white scale-105 shadow-2xl"
                     : "bg-card border"
                 }`}
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-background text-foreground">
+                    <Badge className="bg-accent text-primary border-0 shadow-md">
                       Most Popular
                     </Badge>
                   </div>
                 )}
-                <h3 className="text-xl font-semibold mb-2">{plan.name}</h3>
+                <h3
+                  className={`text-xl font-semibold mb-2 ${plan.popular ? "text-accent" : ""}`}
+                >
+                  {plan.name}
+                </h3>
                 <div className="flex items-baseline gap-1 mb-6">
-                  <IndianRupee className="w-6 h-6" />
-                  <span className="text-5xl font-bold">{plan.price}</span>
+                  <IndianRupee
+                    className={`w-6 h-6 ${plan.popular ? "text-accent" : ""}`}
+                  />
+                  <span
+                    className={`text-5xl font-bold ${plan.popular ? "text-accent" : ""}`}
+                  >
+                    {plan.price}
+                  </span>
                   <span
                     className={
-                      plan.popular
-                        ? "text-primary-foreground/80"
-                        : "text-muted-foreground"
+                      plan.popular ? "text-white/75" : "text-muted-foreground"
                     }
                   >
                     /{plan.period}
@@ -677,16 +682,10 @@ export default function HomePageClient() {
                     <li key={feature} className="flex items-center gap-3">
                       <CheckCircle2
                         className={`w-5 h-5 ${
-                          plan.popular
-                            ? "text-primary-foreground"
-                            : "text-primary"
+                          plan.popular ? "text-accent" : "text-primary"
                         }`}
                       />
-                      <span
-                        className={
-                          plan.popular ? "text-primary-foreground/90" : ""
-                        }
-                      >
+                      <span className={plan.popular ? "text-white/95" : ""}>
                         {feature}
                       </span>
                     </li>
@@ -729,7 +728,7 @@ export default function HomePageClient() {
             >
               Frequently Asked
               <br />
-              <span className="text-gradient font-serif italic">Questions</span>
+              <span className="text-accent font-serif italic">Questions</span>
             </motion.h2>
             <motion.p
               variants={fadeIn}
@@ -769,7 +768,7 @@ export default function HomePageClient() {
       </section>
 
       <section className="py-16 lg:py-24 px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto rounded-3xl bg-gradient-to-br from-primary via-primary to-indigo-700 px-6 py-14 sm:px-12 sm:py-16 text-primary-foreground shadow-xl text-center">
+        <div className="max-w-5xl mx-auto rounded-3xl bg-primary px-6 py-14 sm:px-12 sm:py-16 text-primary-foreground shadow-xl text-center">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -786,8 +785,8 @@ export default function HomePageClient() {
               variants={fadeIn}
               className="text-xl text-primary-foreground/80 mb-10"
             >
-              Join over 2 lakh happy customers who found their perfect property on
-              Solvestay.
+              Join over 2 lakh happy customers who found their perfect property
+              on Solvestay.
             </motion.p>
             <motion.div
               variants={fadeIn}
@@ -809,7 +808,9 @@ export default function HomePageClient() {
                 variant="outline"
                 className="text-lg px-8 bg-transparent border-white/40 text-white hover:bg-white/10"
               >
-                <Link href="/auth/register?role=owner">List Your Property Free</Link>
+                <Link href="/auth/register?role=owner">
+                  List Your Property Free
+                </Link>
               </Button>
             </motion.div>
           </motion.div>
@@ -820,4 +821,3 @@ export default function HomePageClient() {
     </div>
   );
 }
-

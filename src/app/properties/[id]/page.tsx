@@ -1280,7 +1280,7 @@ export default function PropertyDetailPage({
                     ownerId={property.owner_id}
                   />
 
-                  <div className="p-6 rounded-2xl border bg-gradient-to-br from-primary/5 to-accent/5">
+                  <div className="p-6 rounded-2xl border bg-primary/5">
                     <h3 className="font-semibold mb-4">
                       Need help finding a property?
                     </h3>

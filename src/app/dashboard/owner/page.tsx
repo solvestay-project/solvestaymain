@@ -138,7 +138,7 @@ export default function OwnerDashboardPage() {
       <Navbar />
 
       <div className="pt-20">
-        <div className="bg-gradient-to-br from-primary/5 to-accent/5 border-b">
+        <div className="bg-primary/5 border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>

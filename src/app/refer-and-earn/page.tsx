@@ -37,7 +37,8 @@ type ReferralData = {
 const steps = [
   {
     title: "Share your link",
-    description: "Send your unique referral link to friends on WhatsApp or social media.",
+    description:
+      "Send your unique referral link to friends on WhatsApp or social media.",
   },
   {
     title: "Friend signs up",
@@ -114,7 +115,11 @@ export default function ReferAndEarnPage() {
         /* user cancelled or unsupported */
       }
     }
-    window.open(whatsAppShareUrl(shareMessage), "_blank", "noopener,noreferrer");
+    window.open(
+      whatsAppShareUrl(shareMessage),
+      "_blank",
+      "noopener,noreferrer",
+    );
   };
 
   const handleRedeem = async () => {
@@ -142,10 +147,7 @@ export default function ReferAndEarnPage() {
   };
 
   const progressPct = data
-    ? Math.min(
-        100,
-        (data.points_available / REFERRAL.REDEEM_MIN_POINTS) * 100,
-      )
+    ? Math.min(100, (data.points_available / REFERRAL.REDEEM_MIN_POINTS) * 100)
     : 0;
 
   return (
@@ -183,7 +185,9 @@ export default function ReferAndEarnPage() {
                   {i + 1}
                 </div>
                 <h3 className="font-semibold mb-1">{step.title}</h3>
-                <p className="text-sm text-muted-foreground">{step.description}</p>
+                <p className="text-sm text-muted-foreground">
+                  {step.description}
+                </p>
               </div>
             ))}
           </div>
@@ -191,7 +195,9 @@ export default function ReferAndEarnPage() {
           {!user ? (
             <div className="p-8 rounded-2xl border bg-card text-center">
               <Users className="w-12 h-12 text-primary mx-auto mb-4" />
-              <h2 className="text-xl font-semibold mb-2">Sign in to get your link</h2>
+              <h2 className="text-xl font-semibold mb-2">
+                Sign in to get your link
+              </h2>
               <p className="text-muted-foreground mb-6">
                 Create an account or sign in to generate your referral link and
                 start earning points.
@@ -214,7 +220,7 @@ export default function ReferAndEarnPage() {
             </div>
           ) : data ? (
             <div className="space-y-6">
-              <div className="p-6 sm:p-8 rounded-2xl border bg-gradient-to-br from-primary/5 to-indigo-500/5">
+              <div className="p-6 sm:p-8 rounded-2xl border bg-primary/5">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">
@@ -275,9 +281,9 @@ export default function ReferAndEarnPage() {
                     {data.referral_code}
                   </span>{" "}
                   · 1 referral = {REFERRAL.POINTS_PER_REFERRAL} pts (₹
-                  {(REFERRAL.POINTS_PER_REFERRAL * REFERRAL.POINTS_TO_INR).toFixed(
-                    0,
-                  )}
+                  {(
+                    REFERRAL.POINTS_PER_REFERRAL * REFERRAL.POINTS_TO_INR
+                  ).toFixed(0)}
                   )
                 </p>
 
@@ -302,9 +308,12 @@ export default function ReferAndEarnPage() {
 
                 {data.wallet_balance_inr > 0 && (
                   <p className="text-sm text-muted-foreground mt-4">
-                    Wallet credit applies automatically on your next subscription
-                    purchase at{" "}
-                    <Link href="/pricing" className="text-primary hover:underline">
+                    Wallet credit applies automatically on your next
+                    subscription purchase at{" "}
+                    <Link
+                      href="/pricing"
+                      className="text-primary hover:underline"
+                    >
                       Pricing
                     </Link>
                     .
@@ -370,7 +379,9 @@ export default function ReferAndEarnPage() {
                 {REFERRAL.REDEEM_AMOUNT_INR} subscription wallet credit.
               </li>
               <li>Self-referrals and duplicate accounts are not eligible.</li>
-              <li>Points have no cash value outside Solvestay subscriptions.</li>
+              <li>
+                Points have no cash value outside Solvestay subscriptions.
+              </li>
             </ul>
           </div>
         </div>

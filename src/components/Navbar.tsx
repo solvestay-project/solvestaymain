@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useAuthStore, useNotificationStore } from "@/lib/store";
@@ -11,6 +11,7 @@ import {
   subscriptionIncludesPrioritySupport,
 } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,14 +43,63 @@ import {
   Gift,
 } from "lucide-react";
 
-export function Navbar() {
+type NavKey =
+  | "properties"
+  | "rent"
+  | "buy"
+  | "pg"
+  | "pricing"
+  | "refer"
+  | "priority";
+
+function getActiveNavKey(
+  pathname: string,
+  searchParams: URLSearchParams,
+): NavKey | null {
+  if (pathname === "/pricing") return "pricing";
+  if (pathname === "/refer-and-earn") return "refer";
+  if (pathname === "/support/priority") return "priority";
+
+  if (pathname === "/properties") {
+    const propertyType = searchParams.get("property_type");
+    const listingType = searchParams.get("listing_type");
+    if (propertyType === "pg") return "pg";
+    if (listingType === "rent" || listingType === "lease") return "rent";
+    if (listingType === "sale") return "buy";
+    return "properties";
+  }
+
+  if (pathname.startsWith("/properties/")) {
+    return "properties";
+  }
+
+  return null;
+}
+
+function desktopNavClass(isActive: boolean) {
+  return cn(
+    "px-4 py-2 text-sm font-medium transition-colors rounded-lg",
+    isActive
+      ? "bg-primary/10 text-primary font-semibold"
+      : "text-foreground/80 hover:bg-primary/5 hover:text-primary",
+  );
+}
+
+function mobileNavClass(isActive: boolean) {
+  return cn(
+    "flex items-center gap-3 rounded-lg px-4 py-3",
+    isActive
+      ? "bg-primary/10 font-semibold text-primary"
+      : "hover:bg-muted",
+  );
+}
+
+function NavbarContent() {
   const router = useRouter();
-  const {
-    user,
-    subscription,
-    logout,
-    hasActiveSubscription,
-  } = useAuthStore();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const activeNav = getActiveNavKey(pathname, searchParams);
+  const { user, subscription, logout, hasActiveSubscription } = useAuthStore();
   const { unreadCount } = useNotificationStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -95,7 +145,7 @@ export function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
             <Link href={brandHref} className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-indigo-700 flex items-center justify-center shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-sm">
                 <Home className="w-5 h-5 text-primary-foreground" />
               </div>
               <span className="text-xl font-bold tracking-tight text-primary">
@@ -107,7 +157,7 @@ export function Navbar() {
               <nav className="hidden lg:flex items-center gap-1">
                 <Link
                   href="/properties"
-                  className="px-4 py-2 text-sm font-medium text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
+                  className={desktopNavClass(activeNav === "properties")}
                 >
                   <span className="flex items-center gap-2">
                     <Search className="w-4 h-4" />
@@ -116,31 +166,31 @@ export function Navbar() {
                 </Link>
                 <Link
                   href="/properties?listing_type=rent"
-                  className="px-4 py-2 text-sm font-medium text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
+                  className={desktopNavClass(activeNav === "rent")}
                 >
                   Rent
                 </Link>
                 <Link
                   href="/properties?listing_type=sale"
-                  className="px-4 py-2 text-sm font-medium text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
+                  className={desktopNavClass(activeNav === "buy")}
                 >
                   Buy
                 </Link>
                 <Link
                   href="/properties?property_type=pg"
-                  className="px-4 py-2 text-sm font-medium text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
+                  className={desktopNavClass(activeNav === "pg")}
                 >
                   PG/Hostel
                 </Link>
                 <Link
                   href="/pricing"
-                  className="px-4 py-2 text-sm font-medium text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
+                  className={desktopNavClass(activeNav === "pricing")}
                 >
                   Pricing
                 </Link>
                 <Link
                   href="/refer-and-earn"
-                  className="px-4 py-2 text-sm font-medium text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
+                  className={desktopNavClass(activeNav === "refer")}
                 >
                   <span className="flex items-center gap-2">
                     <Gift className="w-4 h-4" />
@@ -150,7 +200,7 @@ export function Navbar() {
                 {showPrioritySupportNav && (
                   <Link
                     href="/support/priority"
-                    className="px-4 py-2 text-sm font-medium text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
+                    className={desktopNavClass(activeNav === "priority")}
                   >
                     <span className="flex items-center gap-2">
                       <Headphones className="w-4 h-4" />
@@ -165,7 +215,7 @@ export function Navbar() {
               <nav className="hidden lg:flex items-center gap-1">
                 <Link
                   href="/refer-and-earn"
-                  className="px-4 py-2 text-sm font-medium text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
+                  className={desktopNavClass(activeNav === "refer")}
                 >
                   <span className="flex items-center gap-2">
                     <Gift className="w-4 h-4" />
@@ -178,17 +228,19 @@ export function Navbar() {
             <div className="hidden lg:flex items-center gap-3">
               {user ? (
                 <>
-                  {user.role === "customer" && hasActiveSubscription() && subscription && (
-                    <div
-                      className="px-3 py-1.5 bg-primary/10 rounded-lg text-sm max-w-[min(100vw-12rem,280px)] truncate"
-                      title={planDisplayNameFromType(subscription.plan_type)}
-                    >
-                      <span className="text-muted-foreground">Plan: </span>
-                      <span className="font-semibold text-primary">
-                        {planDisplayNameFromType(subscription.plan_type)}
-                      </span>
-                    </div>
-                  )}
+                  {user.role === "customer" &&
+                    hasActiveSubscription() &&
+                    subscription && (
+                      <div
+                        className="px-3 py-1.5 bg-primary/10 rounded-lg text-sm max-w-[min(100vw-12rem,280px)] truncate"
+                        title={planDisplayNameFromType(subscription.plan_type)}
+                      >
+                        <span className="text-muted-foreground">Plan: </span>
+                        <span className="font-semibold text-primary">
+                          {planDisplayNameFromType(subscription.plan_type)}
+                        </span>
+                      </div>
+                    )}
 
                   {user.role === "owner" && (
                     <Button asChild variant="outline" size="sm">
@@ -411,7 +463,7 @@ export function Navbar() {
                   <>
                     <Link
                       href="/properties"
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted"
+                      className={mobileNavClass(activeNav === "properties")}
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Search className="w-5 h-5" />
@@ -419,7 +471,7 @@ export function Navbar() {
                     </Link>
                     <Link
                       href="/properties?listing_type=rent"
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted"
+                      className={mobileNavClass(activeNav === "rent")}
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Building2 className="w-5 h-5" />
@@ -427,7 +479,7 @@ export function Navbar() {
                     </Link>
                     <Link
                       href="/properties?listing_type=sale"
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted"
+                      className={mobileNavClass(activeNav === "buy")}
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Home className="w-5 h-5" />
@@ -435,7 +487,7 @@ export function Navbar() {
                     </Link>
                     <Link
                       href="/properties?property_type=pg"
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted"
+                      className={mobileNavClass(activeNav === "pg")}
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Building2 className="w-5 h-5" />
@@ -443,7 +495,7 @@ export function Navbar() {
                     </Link>
                     <Link
                       href="/pricing"
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted"
+                      className={mobileNavClass(activeNav === "pricing")}
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <CreditCard className="w-5 h-5" />
@@ -451,7 +503,7 @@ export function Navbar() {
                     </Link>
                     <Link
                       href="/refer-and-earn"
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted"
+                      className={mobileNavClass(activeNav === "refer")}
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Gift className="w-5 h-5" />
@@ -460,7 +512,7 @@ export function Navbar() {
                     {showPrioritySupportNav && (
                       <Link
                         href="/support/priority"
-                        className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted"
+                        className={mobileNavClass(activeNav === "priority")}
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         <Headphones className="w-5 h-5" />
@@ -469,13 +521,11 @@ export function Navbar() {
                     )}
                   </>
                 )}
-                {!hideCustomerBrowseNav && (
-                  <div className="border-t my-4" />
-                )}
+                {!hideCustomerBrowseNav && <div className="border-t my-4" />}
                 {hideCustomerBrowseNav && (
                   <Link
                     href="/refer-and-earn"
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted"
+                    className={mobileNavClass(activeNav === "refer")}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <Gift className="w-5 h-5" />
@@ -576,5 +626,13 @@ export function Navbar() {
         )}
       </AnimatePresence>
     </>
+  );
+}
+
+export function Navbar() {
+  return (
+    <Suspense fallback={null}>
+      <NavbarContent />
+    </Suspense>
   );
 }

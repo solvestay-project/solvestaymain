@@ -163,7 +163,7 @@ function RegisterContent() {
           sizes="50vw"
         />
         <div
-          className="absolute inset-0 bg-linear-to-br from-primary/92 via-primary/80 to-accent/88"
+          className="absolute inset-0 bg-primary/90"
           aria-hidden
         />
         <div className="pointer-events-none absolute inset-0">
@@ -221,7 +221,7 @@ function RegisterContent() {
           </Link>
 
           <div className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-primary to-accent flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
               <Home className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold">Solvestay</span>
