@@ -41,6 +41,7 @@ import {
   Calendar,
   Headphones,
   Gift,
+  Sparkles,
 } from "lucide-react";
 
 type NavKey =
@@ -48,6 +49,7 @@ type NavKey =
   | "rent"
   | "buy"
   | "pg"
+  | "ai"
   | "pricing"
   | "refer"
   | "priority";
@@ -56,6 +58,7 @@ function getActiveNavKey(
   pathname: string,
   searchParams: URLSearchParams,
 ): NavKey | null {
+  if (pathname === "/ai-search") return "ai";
   if (pathname === "/pricing") return "pricing";
   if (pathname === "/refer-and-earn") return "refer";
   if (pathname === "/support/priority") return "priority";
@@ -181,6 +184,15 @@ function NavbarContent() {
                   className={desktopNavClass(activeNav === "pg")}
                 >
                   PG/Hostel
+                </Link>
+                <Link
+                  href="/ai-search"
+                  className={desktopNavClass(activeNav === "ai")}
+                >
+                  <span className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4" />
+                    AI Search
+                  </span>
                 </Link>
                 <Link
                   href="/pricing"
@@ -492,6 +504,14 @@ function NavbarContent() {
                     >
                       <Building2 className="w-5 h-5" />
                       PG/Hostel
+                    </Link>
+                    <Link
+                      href="/ai-search"
+                      className={mobileNavClass(activeNav === "ai")}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Sparkles className="w-5 h-5" />
+                      AI Search
                     </Link>
                     <Link
                       href="/pricing"

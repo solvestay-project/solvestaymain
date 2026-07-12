@@ -3,13 +3,17 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Profile, Subscription, Property, Notification } from '@/lib/types'
+import type { AiSearchAccess } from '@/lib/ai/dream-home-schema'
 
 interface AuthState {
   user: Profile | null
   subscription: Subscription | null
+  aiSearchAccess: AiSearchAccess | null
   isLoading: boolean
   setUser: (user: Profile | null) => void
   setSubscription: (subscription: Subscription | null) => void
+  setAiSearchAccess: (access: AiSearchAccess | null) => void
+  fetchAiSearchAccess: () => Promise<void>
   setLoading: (loading: boolean) => void
   logout: () => void
   hasActiveSubscription: () => boolean
@@ -22,11 +26,26 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       user: null,
       subscription: null,
+      aiSearchAccess: null,
       isLoading: true,
       setUser: (user) => set({ user }),
       setSubscription: (subscription) => set({ subscription }),
+      setAiSearchAccess: (aiSearchAccess) => set({ aiSearchAccess }),
+      fetchAiSearchAccess: async () => {
+        try {
+          const res = await fetch('/api/ai-search/access')
+          if (res.ok) {
+            const data = (await res.json()) as AiSearchAccess
+            set({ aiSearchAccess: data })
+          } else {
+            set({ aiSearchAccess: null })
+          }
+        } catch {
+          set({ aiSearchAccess: null })
+        }
+      },
       setLoading: (isLoading) => set({ isLoading }),
-      logout: () => set({ user: null, subscription: null }),
+      logout: () => set({ user: null, subscription: null, aiSearchAccess: null }),
       hasActiveSubscription: () => {
         const { subscription } = get()
         if (!subscription) return false

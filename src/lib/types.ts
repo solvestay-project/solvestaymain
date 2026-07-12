@@ -25,6 +25,7 @@ export interface Profile {
   referral_points?: number
   referral_points_redeemed?: number
   referral_wallet_balance_inr?: number
+  ai_trial_used?: boolean
   created_at: string
   updated_at: string
 }
@@ -373,7 +374,7 @@ export const SUBSCRIPTION_PLANS = {
     contacts: 5, 
     duration: 2,
     description: '48 hours access',
-    features: ['5 property contacts', 'Basic search filters', 'Chat with owners', '48 hours access']
+    features: ['5 property contacts', 'Basic search filters', 'Chat with owners', '48 hours access', 'AI Dream Home Search']
   },
   weekly: { 
     id: 'weekly',
@@ -382,7 +383,7 @@ export const SUBSCRIPTION_PLANS = {
     contacts: 20, 
     duration: 7,
     description: '7 days access',
-    features: ['20 property contacts', 'Advanced filters', 'Chat with owners', 'Save favorites', '7 days access', 'Priority support']
+    features: ['20 property contacts', 'Advanced filters', 'Chat with owners', 'Save favorites', '7 days access', 'Priority support', 'AI Dream Home Search']
   },
   monthly: { 
     id: 'monthly',
@@ -399,6 +400,7 @@ export const SUBSCRIPTION_PLANS = {
       'Chat with owners',
       '30 days access',
       'Get early listing',
+      'AI Dream Home Search',
     ]
   },
 } as const
