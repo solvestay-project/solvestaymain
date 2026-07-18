@@ -1,38 +1,57 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { PropertyCard } from '@/components/PropertyCard'
 import { useAuthStore } from '@/lib/store'
 import type { Property } from '@/lib/types'
 import type { AiSearchAccess, DreamHomeCriteria } from '@/lib/ai/dream-home-schema'
 import {
   Sparkles,
   Loader2,
-  CheckCircle2,
   Lock,
   ArrowRight,
-  Wand2,
+  MapPin,
+  Bell,
+  CheckCircle2,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { cn } from '@/lib/utils'
+import dummyMatches from '@/data/ai-matches-dummy.json'
+import type { AiMatchProperty } from '@/lib/ai/ai-match-types'
 
 const EXAMPLE_QUERIES = [
   'I work at Manyata Tech Park. Budget ₹80 lakh. 2BHK with good schools nearby and a gym.',
-  'Need a furnished 1BHK for rent under ₹25k in Koramangala, close to metro.',
-  'Family-friendly 3BHK in Whitefield, low traffic, gated community with pool.',
+  '2BHK for rent under ₹25k in Koramangala, close to metro.',
+  'Family-friendly 3BHK in Whitefield, gated community with pool.',
 ]
+
+const curatedMatches = dummyMatches as AiMatchProperty[]
 
 interface SearchResult {
   property: Property
   match_score: number
   reasons: string[]
   commute_minutes: number | null
+}
+
+function formatCriteriaSummary(criteria: DreamHomeCriteria) {
+  return [
+    criteria.bedrooms != null && `${criteria.bedrooms} BHK`,
+    criteria.max_price != null &&
+      `Budget up to ₹${criteria.max_price.toLocaleString('en-IN')}`,
+    criteria.city,
+    criteria.listing_type,
+    criteria.office_location && `Near ${criteria.office_location}`,
+  ]
+    .filter(Boolean)
+    .join(' • ')
 }
 
 export default function AiSearchPageClient() {
@@ -44,6 +63,7 @@ export default function AiSearchPageClient() {
   const [results, setResults] = useState<SearchResult[]>([])
   const [criteria, setCriteria] = useState<DreamHomeCriteria | null>(null)
   const [hasSearched, setHasSearched] = useState(false)
+  const [email, setEmail] = useState('')
 
   const loadAccess = useCallback(async () => {
     setLoadingAccess(true)
@@ -106,7 +126,9 @@ export default function AiSearchPageClient() {
       await loadAccess()
 
       if (data.used_trial) {
-        toast.success('You used your free AI search tryout. Subscribe for unlimited searches.')
+        toast.success(
+          'You used your free AI search tryout. Subscribe for unlimited searches.',
+        )
       }
     } catch {
       toast.error('Something went wrong. Please try again.')
@@ -115,206 +137,326 @@ export default function AiSearchPageClient() {
     }
   }
 
-  const accessBadge = () => {
-    if (loadingAccess) return null
-    if (!user) {
-      return (
-        <Badge variant="outline" className="gap-1.5">
-          <Lock className="h-3.5 w-3.5" />
-          Sign in for 1 free try
-        </Badge>
-      )
-    }
-    if (access?.is_subscriber) {
-      return (
-        <Badge className="gap-1.5 bg-primary/15 text-primary border-primary/30">
-          <CheckCircle2 className="h-3.5 w-3.5" />
-          Included in your plan
-        </Badge>
-      )
-    }
-    if (access?.trial_remaining === 1) {
-      return (
-        <Badge variant="secondary" className="gap-1.5 border border-primary/30">
-          <Sparkles className="h-3.5 w-3.5 text-primary" />
-          1 free try available
-        </Badge>
-      )
-    }
-    return (
-      <Badge variant="outline" className="gap-1.5 text-muted-foreground">
-        <Lock className="h-3.5 w-3.5" />
-        Subscribe to continue
-      </Badge>
-    )
-  }
+  const canSearch =
+    !!user &&
+    !(access != null && !access.can_search && access.reason === 'trial_used')
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#F5F5F4] text-foreground">
       <Navbar />
 
-      <main className="pt-24 pb-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-10"
-          >
-            <div className="flex justify-center mb-4">{accessBadge()}</div>
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 mb-6">
-              <Wand2 className="w-7 h-7 text-primary" />
+      <main>
+        {/* Hero */}
+        <section className="relative overflow-hidden pt-28 pb-10 sm:pt-32 sm:pb-14">
+          <div
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_#ffffff_0%,_#F5F5F4_55%,_#EEEEEC_100%)]"
+            aria-hidden
+          />
+          <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">
+            {!loadingAccess && (
+              <div className="mb-5 flex justify-center">
+                {!user ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white/80 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
+                    <Lock className="h-3.5 w-3.5" />
+                    Sign in for 1 free try
+                  </span>
+                ) : access?.is_subscriber ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white/80 px-3 py-1 text-xs text-foreground backdrop-blur">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+                    Included in your plan
+                  </span>
+                ) : access?.trial_remaining === 1 ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-white/80 px-3 py-1 text-xs text-foreground backdrop-blur">
+                    <Sparkles className="h-3.5 w-3.5 text-accent" />
+                    1 free try available
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white/80 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
+                    <Lock className="h-3.5 w-3.5" />
+                    Subscribe to continue
+                  </span>
+                )}
+              </div>
+            )}
+
+            <div className="mb-5 flex justify-center">
+              <Sparkles className="h-6 w-6 text-foreground/80" strokeWidth={1.5} />
             </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+
+            <h1 className="mb-4 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem]">
               AI Dream Home{' '}
-              <span className="font-serif italic text-primary">Search</span>
+              <span className="font-semibold">Search</span>
             </h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            <p className="mx-auto mb-10 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
               Skip the filters. Describe your ideal home — budget, office, BHK,
-              lifestyle — and get ranked matches with clear reasons why each fits.
+              lifestyle — and get ranked matches with clear reasons why each
+              fits.
             </p>
-          </motion.div>
 
-          <div className="rounded-2xl border bg-card p-6 shadow-sm mb-8">
-            <Textarea
-              placeholder="Example: I work at Manyata Tech Park. My budget is ₹80 lakh. I need a 2BHK with good schools nearby, low traffic, and a gym."
-              className="min-h-[140px] text-base resize-none mb-4"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              disabled={searching}
-            />
-            <div className="flex flex-wrap gap-2 mb-4">
-              {EXAMPLE_QUERIES.map((ex) => (
-                <button
-                  key={ex}
-                  type="button"
-                  className="text-xs px-3 py-1.5 rounded-full bg-muted hover:bg-primary/10 hover:text-primary transition-colors text-left max-w-full truncate"
-                  onClick={() => setQuery(ex)}
-                >
-                  {ex.slice(0, 55)}…
-                </button>
-              ))}
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3">
-              {!user ? (
-                <Button asChild className="flex-1">
-                  <Link href="/auth/login?redirect=/ai-search">Sign in to search</Link>
-                </Button>
-              ) : (
-                <Button
-                  className="flex-1"
-                  onClick={handleSearch}
-                  disabled={searching || (access != null && !access.can_search && access.reason === 'trial_used')}
-                >
-                  {searching ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Finding matches…
-                    </>
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="rounded-[1.75rem] border border-black/[0.06] bg-white p-5 text-left shadow-[0_20px_60px_-28px_rgba(0,0,0,0.28)] sm:p-6"
+            >
+              <Textarea
+                placeholder="I work at Manyata Tech Park. Budget ₹80 lakh. 2BHK with good schools nearby and a gym."
+                className="min-h-[120px] resize-none border-0 bg-transparent px-1 py-1 text-base shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/70"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                disabled={searching}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                    e.preventDefault()
+                    void handleSearch()
+                  }
+                }}
+              />
+
+              <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-black/[0.05] pt-4">
+                {EXAMPLE_QUERIES.map((ex) => (
+                  <button
+                    key={ex}
+                    type="button"
+                    className="max-w-[min(100%,18rem)] truncate rounded-full border border-black/10 bg-transparent px-3 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:border-black/25 hover:text-foreground"
+                    onClick={() => setQuery(ex)}
+                  >
+                    {ex.length > 42 ? `${ex.slice(0, 42)}…` : ex}
+                  </button>
+                ))}
+                <div className="ml-auto flex flex-wrap gap-2 pt-1 sm:pt-0">
+                  {!user ? (
+                    <Button
+                      asChild
+                      className="rounded-full bg-foreground px-5 text-background hover:bg-foreground/90"
+                    >
+                      <Link href="/auth/login?redirect=/ai-search">
+                        Sign in to search
+                      </Link>
+                    </Button>
                   ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Find my dream home
-                    </>
+                    <Button
+                      className="rounded-full bg-foreground px-5 text-background hover:bg-foreground/90"
+                      onClick={handleSearch}
+                      disabled={searching || !canSearch}
+                    >
+                      {searching ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Finding…
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-2 h-4 w-4" />
+                          Search
+                        </>
+                      )}
+                    </Button>
                   )}
-                </Button>
-              )}
-              {access?.reason === 'trial_used' && !access.is_subscriber && (
-                <Button asChild variant="outline" className="flex-1">
-                  <Link href="/pricing">View plans</Link>
-                </Button>
-              )}
-            </div>
+                  {access?.reason === 'trial_used' && !access.is_subscriber && (
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="rounded-full border-black/15"
+                    >
+                      <Link href="/pricing">View plans</Link>
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+
+            {criteria && hasSearched && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mx-auto mt-5 inline-flex max-w-full items-center rounded-full border border-black/[0.06] bg-white px-5 py-2.5 text-sm text-muted-foreground shadow-sm"
+              >
+                <span className="mr-1.5 shrink-0 font-medium text-foreground">
+                  AI understood:
+                </span>
+                <span className="truncate">
+                  {formatCriteriaSummary(criteria) || 'General property search'}
+                </span>
+              </motion.div>
+            )}
           </div>
+        </section>
 
-          {criteria && hasSearched && (
-            <div className="mb-8 p-4 rounded-xl bg-muted/50 border text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">AI understood: </span>
-              {[
-                criteria.bedrooms != null && `${criteria.bedrooms} BHK`,
-                criteria.max_price != null && `budget up to ₹${criteria.max_price.toLocaleString('en-IN')}`,
-                criteria.city,
-                criteria.listing_type,
-                criteria.office_location && `near ${criteria.office_location}`,
-              ]
-                .filter(Boolean)
-                .join(' · ') || 'General property search'}
+        {/* Curated matches */}
+        <section className="pb-16 sm:pb-20">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div className="mb-8 flex flex-col gap-3 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Curated for you
+                </h2>
+                <p className="mt-1 text-sm text-muted-foreground sm:text-base">
+                  Top matches based on your lifestyle profile.
+                </p>
+              </div>
+              <Link
+                href="/properties"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground/80 transition-colors hover:text-foreground"
+              >
+                Browse all properties
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
-          )}
 
-          {hasSearched && !searching && results.length === 0 && (
-            <div className="text-center py-16 rounded-2xl border bg-card">
-              <p className="text-lg font-medium mb-2">No strong matches yet</p>
-              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                Try adjusting your budget, city, or BHK. More listings are added daily.
-              </p>
-              <Button asChild variant="outline">
-                <Link href="/properties">Browse all properties</Link>
-              </Button>
-            </div>
-          )}
+            {searching && (
+              <div className="mb-6 flex items-center justify-center gap-3 rounded-[1.5rem] border border-black/[0.06] bg-white py-16 text-muted-foreground shadow-sm">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Ranking matches for your lifestyle…
+              </div>
+            )}
 
-          {results.length > 0 && (
-            <div className="space-y-8">
-              <h2 className="text-2xl font-bold">Top matches</h2>
-              {results.map((item, index) => (
+            {!searching && hasSearched && results.length === 0 && (
+              <div className="mb-6 rounded-[1.5rem] border border-black/[0.06] bg-white px-6 py-12 text-center shadow-sm">
+                <p className="mb-2 text-lg font-medium">No live matches yet</p>
+                <p className="mx-auto max-w-md text-sm text-muted-foreground">
+                  Showing curated demo homes below. Try adjusting budget, city,
+                  or BHK for live results.
+                </p>
+              </div>
+            )}
+
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {curatedMatches.map((item, index) => (
                 <motion.div
-                  key={item.property.id}
-                  initial={{ opacity: 0, y: 12 }}
+                  key={item.id}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.06 }}
-                  className="rounded-2xl border bg-card overflow-hidden shadow-sm"
                 >
-                  <div className="p-4 sm:p-5 border-b bg-primary/5 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <Badge className="text-lg px-3 py-1 bg-primary text-primary-foreground">
-                        {item.match_score}% match
-                      </Badge>
-                      {index === 0 && (
-                        <span className="text-sm font-medium text-primary">Best match</span>
-                      )}
+                  <Link
+                    href={`/ai-search/matches?id=${item.id}`}
+                    className="group block h-full overflow-hidden rounded-[1.35rem] border border-black/[0.06] bg-white shadow-[0_12px_40px_-24px_rgba(0,0,0,0.35)] transition-shadow hover:shadow-[0_18px_48px_-20px_rgba(0,0,0,0.4)]"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.name}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                      <div className="absolute left-3 top-3 flex flex-wrap gap-2">
+                        <span className="rounded-full bg-accent px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
+                          {item.matchPercentage}% AI Match
+                        </span>
+                        {item.isExclusive && (
+                          <span className="rounded-full bg-foreground/90 px-2.5 py-1 text-xs font-medium text-background">
+                            Exclusive
+                          </span>
+                        )}
+                      </div>
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 via-black/25 to-transparent p-4 pt-16">
+                        <div className="rounded-xl border border-white/25 bg-white/20 px-3 py-2.5 backdrop-blur-md">
+                          <p className="text-[10px] font-medium uppercase tracking-wider text-white/80">
+                            Starting at
+                          </p>
+                          <div className="flex items-end justify-between gap-2">
+                            <p className="text-xl font-semibold text-white">
+                              {item.price}
+                            </p>
+                            <div className="text-right text-xs text-white/90">
+                              <p>{item.config}</p>
+                              <p className="text-white/70">Ready to Move</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    {item.commute_minutes != null && (
-                      <span className="text-sm text-muted-foreground">
-                        ~{item.commute_minutes} min commute
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-4 sm:p-5">
-                    <ul className="mb-5 space-y-2">
-                      {item.reasons.map((reason) => (
-                        <li key={reason} className="flex items-start gap-2 text-sm">
-                          <CheckCircle2 className="w-4 h-4 text-accent shrink-0 mt-0.5" />
-                          <span>{reason}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <PropertyCard property={item.property} variant="list" />
-                    <div className="mt-4 flex justify-end">
-                      <Button asChild size="sm" variant="outline">
-                        <Link href={`/properties/${item.property.id}`}>
-                          View details
-                          <ArrowRight className="w-4 h-4 ml-1" />
-                        </Link>
-                      </Button>
+
+                    <div className="flex flex-col gap-3 p-5">
+                      <div>
+                        <h3 className="line-clamp-1 text-base font-semibold tracking-tight">
+                          {item.name}
+                        </h3>
+                        <p className="mt-1.5 flex items-start gap-1.5 text-sm text-muted-foreground">
+                          <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                          <span className="line-clamp-1">{item.commuteLabel}</span>
+                        </p>
+                      </div>
+                      <div
+                        className={cn(
+                          'rounded-xl bg-[#F3F3F1] px-3.5 py-3 text-sm leading-relaxed text-muted-foreground',
+                        )}
+                      >
+                        “{item.aiAnalysis}”
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 </motion.div>
               ))}
             </div>
-          )}
+          </div>
+        </section>
 
-          {hasSearched && results.length > 0 && (
-            <div className="mt-12 p-6 rounded-2xl bg-accent text-white text-center">
-              <p className="font-semibold mb-2">Found your match?</p>
-              <p className="text-white/85 text-sm mb-4">
-                Subscribe to reveal owner contacts and chat directly — zero brokerage.
-              </p>
-              <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
-                <Link href="/pricing">Get a plan</Link>
-              </Button>
+        {/* CTA */}
+        <section className="pb-16 sm:pb-20">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div className="relative overflow-hidden rounded-[2rem] bg-[#141414] px-6 py-12 text-white sm:px-10 sm:py-14 lg:px-14">
+              <div className="relative z-10 grid items-center gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+                <div>
+                  <h2 className="mb-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+                    Never miss a match again.
+                  </h2>
+                  <p className="mb-8 max-w-md text-sm leading-relaxed text-white/65 sm:text-base">
+                    Join discerning buyers getting AI-filtered properties
+                    straight to their inbox — or unlock unlimited search with a
+                    Solvestay plan.
+                  </p>
+                  <form
+                    className="flex max-w-md flex-col gap-3 sm:flex-row"
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      if (!email.trim()) {
+                        toast.error('Enter your email address')
+                        return
+                      }
+                      toast.success("You're on the list. We'll be in touch.")
+                      setEmail('')
+                    }}
+                  >
+                    <Input
+                      type="email"
+                      placeholder="Email address"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="h-12 rounded-full border-white/10 bg-white/10 text-white placeholder:text-white/45 focus-visible:border-white/30 focus-visible:ring-white/20"
+                    />
+                    <Button
+                      type="submit"
+                      className="h-12 shrink-0 rounded-full bg-white px-6 text-foreground hover:bg-white/90"
+                    >
+                      Get early access
+                    </Button>
+                  </form>
+                  <p className="mt-4 text-xs text-white/45">
+                    Prefer full access now?{' '}
+                    <Link
+                      href="/pricing"
+                      className="underline underline-offset-2 hover:text-white"
+                    >
+                      View plans
+                    </Link>
+                  </p>
+                </div>
+
+                <div className="relative mx-auto hidden h-48 w-48 items-center justify-center lg:flex">
+                  <div className="absolute inset-0 rounded-full border border-white/10" />
+                  <div className="absolute inset-6 rounded-full border border-white/10" />
+                  <div className="absolute inset-12 rounded-full border border-white/15" />
+                  <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-white/10">
+                    <Bell className="h-7 w-7 text-white/80" strokeWidth={1.5} />
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
-        </div>
+          </div>
+        </section>
       </main>
 
       <Footer />

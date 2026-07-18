@@ -201,7 +201,7 @@ function PricingCard({
 
       <div className="mb-6">
         <h3
-          className={`mb-2 font-serif text-xl font-semibold ${
+          className={`mb-2 text-xl font-semibold ${
             isPopular ? "text-accent" : "text-foreground"
           }`}
         >
@@ -449,7 +449,7 @@ export default function PricingPage() {
               <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                 Choose Your
                 <br />
-                <span className="font-serif italic text-accent">
+                <span className="font-semibold text-accent">
                   Perfect Plan
                 </span>
               </h1>

@@ -322,7 +322,7 @@ export default function HomePageClient() {
               className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight mb-6 text-white drop-shadow-md"
             >
               Find Your{" "}
-              <span className="font-serif italic text-accent">Perfect</span>
+              <span className="font-semibold text-accent">Perfect</span>
               <br />
               Home Today
             </motion.h1>
@@ -495,7 +495,7 @@ export default function HomePageClient() {
             >
               Everything You Need to
               <br />
-              <span className="text-accent font-serif italic">
+              <span className="text-accent font-semibold">
                 Find Your Home
               </span>
             </motion.h2>
@@ -558,7 +558,7 @@ export default function HomePageClient() {
             >
               Explore Properties in
               <br />
-              <span className="text-accent font-serif italic">
+              <span className="text-accent font-semibold">
                 Key Bangalore Areas
               </span>
             </motion.h2>
@@ -621,7 +621,7 @@ export default function HomePageClient() {
             >
               Affordable Plans for
               <br />
-              <span className="text-accent font-serif italic">Everyone</span>
+              <span className="text-accent font-semibold">Everyone</span>
             </motion.h2>
             <motion.p
               variants={fadeIn}
@@ -729,7 +729,7 @@ export default function HomePageClient() {
             >
               Frequently Asked
               <br />
-              <span className="text-accent font-serif italic">Questions</span>
+              <span className="text-accent font-semibold">Questions</span>
             </motion.h2>
             <motion.p
               variants={fadeIn}
