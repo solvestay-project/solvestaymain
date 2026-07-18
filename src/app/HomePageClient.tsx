@@ -300,7 +300,7 @@ export default function HomePageClient() {
           <div className="absolute inset-0 bg-black/55" aria-hidden />
         </div>
 
-        <div className="relative z-10 mx-auto w-full min-w-0 max-w-[120rem] px-4 sm:px-6 lg:px-12 pt-28 pb-24">
+        <div className="relative z-10 mx-auto w-full min-w-0 max-w-[120rem] px-4 sm:px-6 lg:px-12 pt-28 pb-32 sm:pb-36">
           <motion.div
             initial="hidden"
             animate="visible"
@@ -429,7 +429,7 @@ export default function HomePageClient() {
 
             <motion.div
               variants={fadeIn}
-              className="mt-16 flex flex-wrap justify-center gap-6 px-2 sm:gap-10 md:gap-14"
+              className="mt-16 flex flex-wrap justify-center gap-6 px-2 pb-8 sm:gap-10 sm:pb-10 md:gap-14"
             >
               {stats.map((stat) => (
                 <div key={stat.label} className="text-center min-w-[7rem]">
