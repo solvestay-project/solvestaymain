@@ -91,9 +91,7 @@ function desktopNavClass(isActive: boolean) {
 function mobileNavClass(isActive: boolean) {
   return cn(
     "flex items-center gap-3 rounded-lg px-4 py-3",
-    isActive
-      ? "bg-primary/10 font-semibold text-primary"
-      : "hover:bg-muted",
+    isActive ? "bg-primary/10 font-semibold text-primary" : "hover:bg-muted",
   );
 }
 

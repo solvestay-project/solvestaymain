@@ -72,8 +72,12 @@ export default function HousesForRentInBangalorePage() {
               owners.
             </p>
             <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
-              <li>Zero brokerage on house rentals — pay only for contact access.</li>
-              <li>Verified owner profiles and property details where available.</li>
+              <li>
+                Zero brokerage on house rentals — pay only for contact access.
+              </li>
+              <li>
+                Verified owner profiles and property details where available.
+              </li>
               <li>
                 Filters for BHK, furnishing, budget, and nearby areas like tech
                 parks or metro stations.
@@ -117,7 +121,9 @@ export default function HousesForRentInBangalorePage() {
               houses in Bangalore roughly fall into these bands:
             </p>
             <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
-              <li>1 BHK houses: often from around ₹10,000–₹18,000 per month.</li>
+              <li>
+                1 BHK houses: often from around ₹10,000–₹18,000 per month.
+              </li>
               <li>2 BHK houses: frequently in the ₹18,000–₹30,000 range.</li>
               <li>
                 3 BHK and larger houses: ₹30,000+ depending on area, plot size
@@ -175,4 +181,3 @@ export default function HousesForRentInBangalorePage() {
     </div>
   );
 }
-

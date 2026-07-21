@@ -449,9 +449,7 @@ export default function PricingPage() {
               <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                 Choose Your
                 <br />
-                <span className="font-semibold text-accent">
-                  Perfect Plan
-                </span>
+                <span className="font-semibold text-accent">Perfect Plan</span>
               </h1>
               <p className="mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
                 Unlock direct access to property owners and find your dream home

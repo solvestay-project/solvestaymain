@@ -29,9 +29,9 @@ function matchMarkerIcon(match: number, selected: boolean) {
       width:40px;height:40px;border-radius:9999px;
       display:flex;align-items:center;justify-content:center;
       font-weight:700;font-size:13px;color:#fff;
-      background:${selected ? '#141414' : '#1f1f1f'};
+      background:${selected ? '#083b3a' : '#0a4a48'};
       border:2px solid ${selected ? '#c79a4a' : '#fff'};
-      box-shadow:0 8px 20px rgba(0,0,0,0.28);
+      box-shadow:0 8px 20px rgba(8,59,58,0.28);
       transform:${selected ? 'scale(1.08)' : 'scale(1)'};
     ">${match}</div>`,
   })
@@ -48,7 +48,7 @@ function calloutIcon(property: AiMatchProperty) {
       border:1px solid rgba(0,0,0,0.06);min-width:200px;
       font-family:inherit;text-align:left;position:relative;
     ">
-      <div style="font-weight:700;font-size:13px;color:#141414;margin-bottom:2px;">${property.name}</div>
+      <div style="font-weight:700;font-size:13px;color:#083b3a;margin-bottom:2px;">${property.name}</div>
       <div style="font-size:12px;color:#64748b;">${property.price} • ${property.mapCommuteText}</div>
       <div style="
         position:absolute;left:50%;bottom:-7px;width:14px;height:14px;

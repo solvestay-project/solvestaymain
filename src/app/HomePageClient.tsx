@@ -347,7 +347,7 @@ export default function HomePageClient() {
                     onChange={setSelectedCity}
                     placeholder="All Cities"
                     heightClass="h-12 sm:h-14"
-                    triggerClassName="!bg-transparent hover:!bg-muted/40 rounded-xl lg:rounded-full border-0 shadow-none"
+                    triggerClassName="!bg-transparent hover:!bg-primary/10 hover:!text-primary rounded-xl lg:rounded-full border-0 shadow-none"
                   />
                 </div>
                 <div className="relative flex min-w-0 flex-1 items-center px-2 py-1 lg:px-4 lg:py-0">
@@ -491,13 +491,11 @@ export default function HomePageClient() {
             </motion.div>
             <motion.h2
               variants={fadeIn}
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-snug mb-4"
             >
               Everything You Need to
               <br />
-              <span className="text-accent font-semibold">
-                Find Your Home
-              </span>
+              <span className="text-accent font-semibold">Find Your Home</span>
             </motion.h2>
             <motion.p
               variants={fadeIn}
@@ -554,7 +552,7 @@ export default function HomePageClient() {
             </motion.div>
             <motion.h2
               variants={fadeIn}
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-snug mb-4"
             >
               Explore Properties in
               <br />
@@ -579,10 +577,10 @@ export default function HomePageClient() {
             className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto"
           >
             {bangaloreAreas.map((area) => (
-              <motion.div key={area.name} variants={fadeIn}>
+              <motion.div key={area.name} variants={fadeIn} className="h-full">
                 <Link
                   href={`/properties?city=Bangalore&q=${encodeURIComponent(area.search)}`}
-                  className="group flex items-center gap-4 p-5 rounded-2xl bg-card border hover:border-primary/50 hover:shadow-lg transition-all duration-300"
+                  className="group flex h-full items-center gap-4 p-5 rounded-2xl bg-card border hover:border-primary/50 hover:shadow-lg transition-all duration-300"
                 >
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
                     <MapPin className="h-6 w-6 text-primary" />
@@ -617,7 +615,7 @@ export default function HomePageClient() {
             </motion.div>
             <motion.h2
               variants={fadeIn}
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-snug mb-4"
             >
               Affordable Plans for
               <br />
@@ -725,7 +723,7 @@ export default function HomePageClient() {
             </motion.div>
             <motion.h2
               variants={fadeIn}
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-snug mb-4"
             >
               Frequently Asked
               <br />
