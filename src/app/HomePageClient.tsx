@@ -34,7 +34,9 @@ import {
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { HomeCitySelect } from "@/components/HomeCitySelect";
+import { AreaSearchSuggestions } from "@/components/AreaSearchSuggestions";
 import { shortDisplayName } from "@/lib/utils";
+import { useIsMobileLg } from "@/hooks/useIsMobileLg";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -215,11 +217,14 @@ const bangaloreAreas = [
 
 export default function HomePageClient() {
   const router = useRouter();
+  const isMobile = useIsMobileLg();
   const [searchQuery, setSearchQuery] = useState("");
+  const [areaDraft, setAreaDraft] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [areaOptions, setAreaOptions] = useState<
     { id: string; text: string }[]
   >([]);
+  const [areaSearching, setAreaSearching] = useState(false);
   const [showAreaSuggestions, setShowAreaSuggestions] = useState(false);
 
   const defaultSearchCity = "Bangalore";
@@ -231,6 +236,7 @@ export default function HomePageClient() {
         return;
       }
       const cityForSearch = selectedCity || defaultSearchCity;
+      setAreaSearching(true);
       try {
         const res = await fetch(
           `/api/place?q=${encodeURIComponent(query + ", " + cityForSearch)}&limit=6`,
@@ -244,24 +250,39 @@ export default function HomePageClient() {
         setAreaOptions(options);
       } catch {
         setAreaOptions([]);
+      } finally {
+        setAreaSearching(false);
       }
     },
     [selectedCity],
   );
 
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setAreaOptions([]);
-      setShowAreaSuggestions(false);
-      return;
-    }
-    const t = setTimeout(() => fetchAreaSuggestions(searchQuery), 200);
-    return () => clearTimeout(t);
-  }, [searchQuery, selectedCity, fetchAreaSuggestions]);
+  // Desktop: type in the field. Mobile: type only inside the sheet (areaDraft).
+  const activeAreaQuery = isMobile ? areaDraft : searchQuery;
 
   useEffect(() => {
+    if (isMobile === null) return;
+    if (isMobile && !showAreaSuggestions) return;
+
+    if (!activeAreaQuery.trim()) {
+      setAreaOptions([]);
+      if (!isMobile) setShowAreaSuggestions(false);
+      return;
+    }
+    const t = setTimeout(() => fetchAreaSuggestions(activeAreaQuery), 200);
+    return () => clearTimeout(t);
+  }, [
+    activeAreaQuery,
+    selectedCity,
+    fetchAreaSuggestions,
+    isMobile,
+    showAreaSuggestions,
+  ]);
+
+  useEffect(() => {
+    if (isMobile) return;
     if (areaOptions.length > 0) setShowAreaSuggestions(true);
-  }, [areaOptions.length]);
+  }, [areaOptions.length, isMobile]);
 
   const handleSearch = (overrides?: { city?: string; q?: string }) => {
     const params = new URLSearchParams();
@@ -288,7 +309,7 @@ export default function HomePageClient() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <section className="relative min-h-[92vh] flex flex-col justify-center overflow-x-clip overflow-y-visible">
+      <section className="relative flex min-h-[auto] flex-col justify-center overflow-x-clip overflow-y-visible lg:min-h-[92vh]">
         <div className="absolute inset-0">
           <Image
             src={HOME_HERO_IMAGE}
@@ -301,14 +322,14 @@ export default function HomePageClient() {
           <div className="absolute inset-0 bg-black/55" aria-hidden />
         </div>
 
-        <div className="relative z-10 mx-auto w-full min-w-0 max-w-[120rem] px-4 sm:px-6 lg:px-12 pt-28 pb-32 sm:pb-36">
+        <div className="relative z-10 mx-auto w-full min-w-0 max-w-[120rem] px-4 pt-24 pb-10 sm:px-6 sm:pb-14 lg:px-12 lg:pt-28 lg:pb-36">
           <motion.div
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
             className="mx-auto w-full min-w-0 max-w-6xl text-center"
           >
-            <motion.div variants={fadeIn}>
+            <motion.div variants={fadeIn} className="hidden lg:block">
               <Badge
                 variant="secondary"
                 className="mb-6 px-4 py-2 text-sm font-medium border border-white/25 bg-white/10 text-white backdrop-blur-md shadow-sm"
@@ -318,9 +339,16 @@ export default function HomePageClient() {
               </Badge>
             </motion.div>
 
+            <motion.p
+              variants={fadeIn}
+              className="mb-2 text-sm font-semibold tracking-[0.18em] text-accent uppercase lg:hidden"
+            >
+              Solvestay
+            </motion.p>
+
             <motion.h1
               variants={fadeIn}
-              className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight mb-6 text-white drop-shadow-md"
+              className="text-3xl font-bold tracking-tight mb-4 text-white drop-shadow-md sm:text-4xl lg:mb-6 lg:text-7xl"
             >
               Find Your{" "}
               <span className="font-semibold text-accent">Perfect</span>
@@ -330,7 +358,7 @@ export default function HomePageClient() {
 
             <motion.p
               variants={fadeIn}
-              className="text-lg sm:text-xl text-white/85 max-w-3xl mx-auto mb-10"
+              className="mb-6 hidden text-lg text-white/85 max-w-3xl mx-auto sm:text-xl lg:mb-10 lg:block"
             >
               Connect directly with property owners. No brokers, no hidden fees.
               Get owner contact for just{" "}
@@ -353,13 +381,37 @@ export default function HomePageClient() {
                 </div>
                 <div className="relative flex min-w-0 flex-1 items-center px-2 py-1 lg:px-4 lg:py-0">
                   <Search className="pointer-events-none absolute left-5 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground lg:left-5" />
+                  {/* Mobile: tap opens bottom sheet with search */}
+                  <button
+                    type="button"
+                    className="flex h-12 w-full min-w-0 items-center rounded-xl border-0 bg-muted/40 pl-12 pr-3 text-left text-base sm:h-14 lg:hidden"
+                    onClick={() => {
+                      setAreaDraft("");
+                      setAreaOptions([]);
+                      setShowAreaSuggestions(true);
+                    }}
+                  >
+                    <span
+                      className={
+                        searchQuery
+                          ? "truncate text-foreground"
+                          : "truncate text-muted-foreground"
+                      }
+                    >
+                      {searchQuery ||
+                        (selectedCity
+                          ? `Search area in ${selectedCity}`
+                          : "Search area, locality…")}
+                    </span>
+                  </button>
+                  {/* Desktop: type directly in the field */}
                   <Input
                     placeholder={
                       selectedCity
                         ? `Search area, locality or property in ${selectedCity}`
                         : "Search area, locality or property in Bangalore"
                     }
-                    className="h-12 min-w-0 rounded-xl border-0 bg-muted/40 pl-12 text-base sm:h-14 lg:rounded-full"
+                    className="hidden h-12 min-w-0 rounded-xl border-0 bg-muted/40 pl-12 text-base sm:h-14 lg:block lg:rounded-full"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onFocus={() =>
@@ -370,31 +422,36 @@ export default function HomePageClient() {
                     }
                     onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   />
-                  {showAreaSuggestions && areaOptions.length > 0 && (
-                    <ul className="absolute z-20 left-2 right-2 lg:left-4 lg:right-4 top-full mt-1 bg-popover text-popover-foreground border border-border rounded-xl shadow-lg overflow-hidden py-1 text-left">
-                      {areaOptions.map((area) => (
-                        <li
-                          key={area.id}
-                          className="px-4 py-2.5 cursor-pointer hover:bg-accent text-sm transition-colors"
-                          onMouseDown={(e) => {
-                            e.preventDefault();
-                            setSearchQuery(area.text);
-                            if (!selectedCity)
-                              setSelectedCity(defaultSearchCity);
-                            setAreaOptions([]);
-                            setShowAreaSuggestions(false);
-                          }}
-                        >
-                          {area.text}
-                          {selectedCity && (
-                            <span className="ml-2 text-muted-foreground text-xs">
-                              {selectedCity}
-                            </span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  <AreaSearchSuggestions
+                    open={showAreaSuggestions}
+                    onOpenChange={(open) => {
+                      setShowAreaSuggestions(open);
+                      if (!open) {
+                        setAreaDraft("");
+                        setAreaOptions([]);
+                      }
+                    }}
+                    query={isMobile ? areaDraft : searchQuery}
+                    onQueryChange={(v) => {
+                      if (isMobile) setAreaDraft(v);
+                      else setSearchQuery(v);
+                    }}
+                    options={areaOptions}
+                    loading={areaSearching}
+                    cityLabel={selectedCity || undefined}
+                    title="Search area"
+                    placeholder={
+                      selectedCity
+                        ? `Area in ${selectedCity}`
+                        : "Area or locality…"
+                    }
+                    onSelect={(area) => {
+                      setSearchQuery(area.text);
+                      setAreaDraft("");
+                      if (!selectedCity) setSelectedCity(defaultSearchCity);
+                      setAreaOptions([]);
+                    }}
+                  />
                 </div>
                 <div className="flex w-full min-w-0 shrink-0 items-stretch px-2 pb-1 lg:w-auto lg:p-0">
                   <Button
@@ -411,16 +468,18 @@ export default function HomePageClient() {
 
             <motion.div
               variants={fadeIn}
-              className="mx-auto mt-6 w-full min-w-0 max-w-5xl space-y-3 text-center"
+              className="mx-auto mt-4 w-full min-w-0 max-w-5xl space-y-3 text-center lg:mt-6"
             >
-              <p className="text-sm text-white/80">Popular in Bangalore:</p>
-              <div className="flex flex-wrap justify-center gap-2 px-0.5">
+              <p className="hidden text-sm text-white/80 lg:block">
+                Popular in Bangalore:
+              </p>
+              <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:flex-wrap lg:justify-center lg:overflow-visible lg:px-0.5 lg:pb-0">
                 {popularBangaloreSearches.map((item) => (
                   <button
                     key={item.label}
                     type="button"
                     onClick={() => handleSearch({ city: item.city, q: item.q })}
-                    className="rounded-full border border-white/25 bg-white/10 px-3 py-2 text-sm text-white backdrop-blur-sm transition-colors hover:bg-white hover:text-primary sm:px-4"
+                    className="shrink-0 rounded-full border border-white/25 bg-white/10 px-3 py-2 text-sm text-white backdrop-blur-sm transition-colors hover:bg-white hover:text-primary sm:px-4"
                   >
                     {item.label}
                   </button>
@@ -430,7 +489,7 @@ export default function HomePageClient() {
 
             <motion.div
               variants={fadeIn}
-              className="mt-16 flex flex-wrap justify-center gap-6 px-2 pb-8 sm:gap-10 sm:pb-10 md:gap-14"
+              className="mt-16 hidden flex-wrap justify-center gap-6 px-2 pb-8 sm:gap-10 sm:pb-10 md:gap-14 lg:flex"
             >
               {stats.map((stat) => (
                 <div key={stat.label} className="text-center min-w-[7rem]">
@@ -444,29 +503,35 @@ export default function HomePageClient() {
           </motion.div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-background pointer-events-none z-[1]" />
+        <div className="absolute bottom-0 left-0 right-0 hidden h-24 bg-background pointer-events-none z-[1] lg:block" />
       </section>
 
-      <section className="py-20 bg-muted/40">
+      {/* App shortcuts — compact on mobile; fuller cards on desktop */}
+      <section className="bg-background py-5 lg:bg-muted/40 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="mb-3 text-sm font-medium text-muted-foreground lg:hidden">
+            Browse by type
+          </p>
           <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={staggerContainer}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
+            className="grid grid-cols-4 gap-2 lg:grid-cols-4 lg:gap-6"
           >
             {propertyTypes.map((type) => (
               <motion.div key={type.label} variants={fadeIn}>
                 <Link
                   href={type.href}
-                  className="group block h-full p-6 sm:p-8 bg-card rounded-2xl border border-border/60 shadow-sm hover:shadow-xl hover:border-primary/35 hover:-translate-y-0.5 transition-all duration-300"
+                  className="group flex h-full flex-col items-center rounded-2xl border border-border/60 bg-card p-3 text-center shadow-sm transition-all duration-300 hover:border-primary/35 hover:shadow-md sm:p-4 lg:items-start lg:p-6 lg:text-left lg:hover:-translate-y-0.5 lg:hover:shadow-xl lg:sm:p-8"
                 >
-                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/18 transition-colors">
-                    <type.icon className="w-7 h-7 text-primary" />
+                  <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/18 lg:mb-4 lg:h-14 lg:w-14">
+                    <type.icon className="h-5 w-5 text-primary lg:h-7 lg:w-7" />
                   </div>
-                  <h3 className="text-lg font-semibold mb-1">{type.label}</h3>
-                  <p className="text-muted-foreground text-sm">
+                  <h3 className="text-xs font-semibold leading-tight lg:text-lg">
+                    {type.label}
+                  </h3>
+                  <p className="mt-0.5 hidden text-sm text-muted-foreground lg:block">
                     {type.count} listings
                   </p>
                 </Link>
@@ -476,7 +541,7 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      <section className="py-20 lg:py-32">
+      <section className="hidden py-20 lg:block lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -537,7 +602,7 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      <section className="py-20 lg:py-32 bg-muted/30">
+      <section className="hidden bg-muted/30 py-20 lg:block lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -600,7 +665,7 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      <section className="py-20 lg:py-32 relative overflow-hidden bg-muted/40">
+      <section className="relative hidden overflow-hidden bg-muted/40 py-20 lg:block lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             initial="hidden"
@@ -708,7 +773,7 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      <section className="py-20 lg:py-32 bg-muted/30">
+      <section className="hidden bg-muted/30 py-20 lg:block lg:py-32">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -767,7 +832,7 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      <section className="py-16 lg:py-24 px-4 sm:px-6">
+      <section className="hidden px-4 py-16 sm:px-6 lg:block lg:py-24">
         <div className="max-w-5xl mx-auto rounded-3xl bg-primary px-6 py-14 sm:px-12 sm:py-16 text-primary-foreground shadow-xl text-center">
           <motion.div
             initial="hidden"
@@ -817,7 +882,30 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      <Footer />
+      {/* Mobile-only compact footer links */}
+      <div className="border-t border-border/60 px-4 py-6 lg:hidden">
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
+          <Link href="/about" className="hover:text-primary">
+            About
+          </Link>
+          <Link href="/faq" className="hover:text-primary">
+            FAQ
+          </Link>
+          <Link href="/pricing" className="hover:text-primary">
+            Pricing
+          </Link>
+          <Link href="/privacy" className="hover:text-primary">
+            Privacy
+          </Link>
+        </div>
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          © {new Date().getFullYear()} Solvestay
+        </p>
+      </div>
+
+      <div className="hidden lg:block">
+        <Footer />
+      </div>
     </div>
   );
 }

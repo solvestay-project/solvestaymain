@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Suspense, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useAuthStore, useNotificationStore } from "@/lib/store";
 import {
@@ -31,8 +31,6 @@ import {
   Heart,
   MessageSquare,
   LayoutDashboard,
-  Menu,
-  X,
   Plus,
   Bell,
   CreditCard,
@@ -45,6 +43,7 @@ import {
 } from "lucide-react";
 
 type NavKey =
+  | "home"
   | "properties"
   | "rent"
   | "buy"
@@ -52,16 +51,36 @@ type NavKey =
   | "ai"
   | "pricing"
   | "refer"
-  | "priority";
+  | "priority"
+  | "account"
+  | "add"
+  | "listings"
+  | "owner-home";
 
 function getActiveNavKey(
   pathname: string,
   searchParams: URLSearchParams,
 ): NavKey | null {
+  if (pathname === "/") return "home";
   if (pathname === "/ai-search") return "ai";
   if (pathname === "/pricing") return "pricing";
   if (pathname === "/refer-and-earn") return "refer";
   if (pathname === "/support/priority") return "priority";
+  if (pathname === "/dashboard/owner") return "owner-home";
+  if (pathname === "/dashboard/properties/new") return "add";
+  if (
+    pathname.startsWith("/dashboard/properties") &&
+    pathname !== "/dashboard/properties/new"
+  ) {
+    return "listings";
+  }
+  if (
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/auth/") ||
+    pathname === "/admin"
+  ) {
+    return "account";
+  }
 
   if (pathname === "/properties") {
     const propertyType = searchParams.get("property_type");
@@ -88,10 +107,10 @@ function desktopNavClass(isActive: boolean) {
   );
 }
 
-function mobileNavClass(isActive: boolean) {
+function bottomNavItemClass(isActive: boolean) {
   return cn(
-    "flex items-center gap-3 rounded-lg px-4 py-3",
-    isActive ? "bg-primary/10 font-semibold text-primary" : "hover:bg-muted",
+    "flex flex-1 flex-col items-center justify-center gap-0.5 py-1.5 text-[10px] font-medium transition-colors min-w-0",
+    isActive ? "text-primary" : "text-muted-foreground",
   );
 }
 
@@ -102,10 +121,8 @@ function NavbarContent() {
   const activeNav = getActiveNavKey(pathname, searchParams);
   const { user, subscription, logout, hasActiveSubscription } = useAuthStore();
   const { unreadCount } = useNotificationStore();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
-    setMobileMenuOpen(false);
     const supabase = createClient();
     try {
       await Promise.race([
@@ -135,6 +152,96 @@ function NavbarContent() {
     user?.role === "customer" &&
     hasActiveSubscription() &&
     subscriptionIncludesPrioritySupport(subscription);
+
+  // Reserve space for fixed bottom nav on mobile
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023px)");
+    const apply = () => {
+      document.body.style.paddingBottom = mq.matches
+        ? "calc(5.25rem + env(safe-area-inset-bottom, 0px))"
+        : "";
+    };
+    apply();
+    mq.addEventListener("change", apply);
+    return () => {
+      mq.removeEventListener("change", apply);
+      document.body.style.paddingBottom = "";
+    };
+  }, []);
+
+  const customerBottomItems: {
+    href: string;
+    label: string;
+    icon: typeof Home;
+    key: NavKey;
+  }[] = [
+    { href: "/", label: "Home", icon: Home, key: "home" },
+    { href: "/properties", label: "Search", icon: Search, key: "properties" },
+    { href: "/ai-search", label: "AI", icon: Sparkles, key: "ai" },
+    { href: "/pricing", label: "Plans", icon: CreditCard, key: "pricing" },
+    {
+      href: user ? dashboardHref : "/auth/login",
+      label: user ? "Account" : "Sign in",
+      icon: User,
+      key: "account",
+    },
+  ];
+
+  const ownerBottomItems: {
+    href: string;
+    label: string;
+    icon: typeof Home;
+    key: NavKey;
+  }[] = [
+    {
+      href: "/dashboard/owner",
+      label: "Home",
+      icon: LayoutDashboard,
+      key: "owner-home",
+    },
+    {
+      href: "/dashboard/properties",
+      label: "Listings",
+      icon: Building2,
+      key: "listings",
+    },
+    {
+      href: "/dashboard/properties/new",
+      label: "Add",
+      icon: Plus,
+      key: "add",
+    },
+    { href: "/refer-and-earn", label: "Refer", icon: Gift, key: "refer" },
+    {
+      href: "/dashboard/settings",
+      label: "Account",
+      icon: User,
+      key: "account",
+    },
+  ];
+
+  const bottomItems = hideCustomerBrowseNav
+    ? ownerBottomItems
+    : customerBottomItems;
+
+  const isBottomActive = (key: NavKey) => {
+    if (key === "properties") {
+      return (
+        activeNav === "properties" ||
+        activeNav === "rent" ||
+        activeNav === "buy" ||
+        activeNav === "pg"
+      );
+    }
+    if (key === "account") {
+      return (
+        activeNav === "account" ||
+        pathname.startsWith("/dashboard") ||
+        pathname.startsWith("/auth/")
+      );
+    }
+    return activeNav === key;
+  };
 
   return (
     <>
@@ -235,6 +342,7 @@ function NavbarContent() {
               </nav>
             )}
 
+            {/* Desktop auth */}
             <div className="hidden lg:flex items-center gap-3">
               {user ? (
                 <>
@@ -432,217 +540,63 @@ function NavbarContent() {
               )}
             </div>
 
-            <button
-              className="lg:hidden p-2 rounded-lg hover:bg-muted"
-              onClick={() => setMobileMenuOpen(true)}
-            >
-              <Menu className="w-6 h-6" />
-            </button>
+            {/* Mobile top actions — no hamburger */}
+            <div className="flex lg:hidden items-center gap-1">
+              {user ? (
+                <Link
+                  href="/dashboard/notifications"
+                  className="relative p-2 rounded-lg hover:bg-muted"
+                  aria-label="Notifications"
+                >
+                  <Bell className="w-5 h-5 text-muted-foreground" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-destructive text-destructive-foreground text-[10px] rounded-full flex items-center justify-center">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </Link>
+              ) : (
+                <Button asChild variant="ghost" size="sm" className="text-sm">
+                  <Link href="/auth/login">Sign In</Link>
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </motion.header>
 
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 z-50 lg:hidden"
-              onClick={() => setMobileMenuOpen(false)}
-            />
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 20 }}
-              className="fixed top-0 right-0 bottom-0 w-80 bg-background z-50 lg:hidden shadow-xl"
-            >
-              <div className="flex items-center justify-between p-4 border-b">
-                <span className="font-bold text-lg">Menu</span>
-                <button
-                  className="p-2 rounded-lg hover:bg-muted"
-                  onClick={() => setMobileMenuOpen(false)}
+      {/* Mobile app-style bottom navigation */}
+      <nav
+        className="fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] inset-x-3 z-50 mx-auto max-w-lg lg:hidden"
+        aria-label="Mobile primary"
+      >
+        <div className="flex h-16 items-stretch rounded-2xl border border-border/70 bg-white/95 px-1 shadow-lg shadow-black/10 backdrop-blur-md ring-1 ring-black/5">
+          {bottomItems.map((item) => {
+            const Icon = item.icon;
+            const active = isBottomActive(item.key);
+            return (
+              <Link
+                key={item.key}
+                href={item.href}
+                className={bottomNavItemClass(active)}
+              >
+                <span
+                  className={cn(
+                    "flex h-8 w-8 items-center justify-center rounded-full transition-colors",
+                    active && "bg-primary/10",
+                  )}
                 >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <nav className="p-4 space-y-2">
-                {!hideCustomerBrowseNav && (
-                  <>
-                    <Link
-                      href="/properties"
-                      className={mobileNavClass(activeNav === "properties")}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Search className="w-5 h-5" />
-                      Find Properties
-                    </Link>
-                    <Link
-                      href="/properties?listing_type=rent"
-                      className={mobileNavClass(activeNav === "rent")}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Building2 className="w-5 h-5" />
-                      Rent
-                    </Link>
-                    <Link
-                      href="/properties?listing_type=sale"
-                      className={mobileNavClass(activeNav === "buy")}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Home className="w-5 h-5" />
-                      Buy
-                    </Link>
-                    <Link
-                      href="/properties?property_type=pg"
-                      className={mobileNavClass(activeNav === "pg")}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Building2 className="w-5 h-5" />
-                      PG/Hostel
-                    </Link>
-                    <Link
-                      href="/ai-search"
-                      className={mobileNavClass(activeNav === "ai")}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Sparkles className="w-5 h-5" />
-                      AI Search
-                    </Link>
-                    <Link
-                      href="/pricing"
-                      className={mobileNavClass(activeNav === "pricing")}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <CreditCard className="w-5 h-5" />
-                      Pricing
-                    </Link>
-                    <Link
-                      href="/refer-and-earn"
-                      className={mobileNavClass(activeNav === "refer")}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Gift className="w-5 h-5" />
-                      Refer & Earn
-                    </Link>
-                    {showPrioritySupportNav && (
-                      <Link
-                        href="/support/priority"
-                        className={mobileNavClass(activeNav === "priority")}
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <Headphones className="w-5 h-5" />
-                        Priority support
-                      </Link>
-                    )}
-                  </>
-                )}
-                {!hideCustomerBrowseNav && <div className="border-t my-4" />}
-                {hideCustomerBrowseNav && (
-                  <Link
-                    href="/refer-and-earn"
-                    className={mobileNavClass(activeNav === "refer")}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <Gift className="w-5 h-5" />
-                    Refer & Earn
-                  </Link>
-                )}
-                {user ? (
-                  <>
-                    {user.role === "customer" &&
-                      hasActiveSubscription() &&
-                      subscription && (
-                        <div className="px-4 py-3 rounded-lg bg-primary/10 text-sm mb-1">
-                          <span className="text-muted-foreground">Plan: </span>
-                          <span className="font-semibold text-primary">
-                            {planDisplayNameFromType(subscription.plan_type)}
-                          </span>
-                        </div>
-                      )}
-                    {user.role === "admin" && (
-                      <Link
-                        href="/admin"
-                        className="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary font-medium"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <Shield className="w-5 h-5" />
-                        Admin Panel
-                      </Link>
-                    )}
-                    <Link
-                      href={dashboardHref}
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <LayoutDashboard className="w-5 h-5" />
-                      Dashboard
-                    </Link>
-                    {user.role === "owner" && (
-                      <Link
-                        href="/dashboard/properties"
-                        className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <Building2 className="w-5 h-5" />
-                        My Properties
-                      </Link>
-                    )}
-                    {user.role === "customer" && (
-                      <Link
-                        href="/dashboard/favorites"
-                        className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <Heart className="w-5 h-5" />
-                        Favorites
-                      </Link>
-                    )}
-                    <Link
-                      href="/dashboard/messages"
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <MessageSquare className="w-5 h-5" />
-                      Messages
-                    </Link>
-                    <button
-                      onClick={() => {
-                        handleLogout();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted w-full text-left text-destructive"
-                    >
-                      <LogOut className="w-5 h-5" />
-                      Log out
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      href="/auth/login"
-                      className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <User className="w-5 h-5" />
-                      Sign In
-                    </Link>
-                    <Link
-                      href="/auth/register"
-                      className="block"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Button className="w-full">Get Started</Button>
-                    </Link>
-                  </>
-                )}
-              </nav>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+                  <Icon
+                    className={cn("h-5 w-5", active && "text-primary")}
+                    strokeWidth={active ? 2.25 : 1.75}
+                  />
+                </span>
+                <span className="truncate w-full text-center">{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </>
   );
 }
