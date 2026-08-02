@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { 
   Building2, 
   Search,
@@ -122,14 +123,19 @@ export default function AdminProperties() {
           <h1 className="text-3xl font-bold text-slate-900">Property Moderation</h1>
           <p className="text-slate-500 mt-1">Manage and review all property listings.</p>
         </div>
-        <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <Input 
-            placeholder="Search properties..." 
-            className="pl-10 bg-white border-slate-200"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Input 
+              placeholder="Search properties..." 
+              className="pl-10 bg-white border-slate-200"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <Button asChild className="shrink-0">
+            <Link href="/admin/properties/new">Add Property</Link>
+          </Button>
         </div>
       </div>
 
@@ -177,8 +183,12 @@ export default function AdminProperties() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm">
-                        <p className="font-medium text-slate-900">{property.owner?.full_name || 'Unknown'}</p>
-                        <p className="text-slate-500 text-xs">{property.owner?.email}</p>
+                        <p className="font-medium text-slate-900">
+                          {property.owner_name || property.owner?.full_name || 'Unknown'}
+                        </p>
+                        <p className="text-slate-500 text-xs">
+                          {property.owner_phone || property.owner?.email || '—'}
+                        </p>
                       </div>
                     </td>
                     <td className="px-6 py-4">

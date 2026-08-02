@@ -2,6 +2,6 @@
 
 import { PropertyPgListingWizard } from "@/components/property/PropertyPgListingWizard";
 
-export default function NewPgPropertyPage() {
-  return <PropertyPgListingWizard mode="owner" />;
+export default function AdminNewPgPropertyPage() {
+  return <PropertyPgListingWizard mode="admin" />;
 }

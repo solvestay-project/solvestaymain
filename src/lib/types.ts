@@ -60,6 +60,10 @@ export type ListingAvailability = 'available' | 'sold_out'
 export interface Property {
   id: string
   owner_id: string
+  /** Set when admin lists on behalf of an owner */
+  owner_name?: string | null
+  /** Set when admin lists on behalf of an owner; preferred for contact reveal */
+  owner_phone?: string | null
   title: string
   description: string | null
   property_type: PropertyType
