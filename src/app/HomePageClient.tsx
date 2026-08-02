@@ -34,6 +34,7 @@ import {
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { HomeCitySelect } from "@/components/HomeCitySelect";
+import { shortDisplayName } from "@/lib/utils";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -238,7 +239,7 @@ export default function HomePageClient() {
         const places = data.success && data.places ? data.places : [];
         const options = places.map((p: any, i: number) => ({
           id: `${p.display_name}-${i}`,
-          text: p.area || p.display_name || "",
+          text: shortDisplayName(p.display_name) || p.area || "",
         }));
         setAreaOptions(options);
       } catch {

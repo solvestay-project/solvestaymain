@@ -35,6 +35,7 @@ import type {
 } from "@/lib/types";
 import { AMENITIES } from "@/lib/types";
 import { HomeCitySelect } from "@/components/HomeCitySelect";
+import { shortDisplayName } from "@/lib/utils";
 import { toast } from "sonner";
 import {
   Search,
@@ -140,7 +141,7 @@ function PropertiesContent() {
         setAreaOptions(
           places.map((p: any, i: number) => ({
             id: `${p.display_name}-${i}`,
-            text: p.area || p.display_name || "",
+            text: shortDisplayName(p.display_name) || p.area || "",
           })),
         );
       } catch {
