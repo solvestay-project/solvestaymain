@@ -35,6 +35,9 @@ import type {
 } from "@/lib/types";
 import { AMENITIES } from "@/lib/types";
 import { HomeCitySelect } from "@/components/HomeCitySelect";
+import { AreaSearchSuggestions } from "@/components/AreaSearchSuggestions";
+import { shortDisplayName } from "@/lib/utils";
+import { useIsMobileLg } from "@/hooks/useIsMobileLg";
 import { toast } from "sonner";
 import {
   Search,
@@ -89,11 +92,13 @@ function PropertiesContent() {
   );
   const searchParams = useSearchParams();
   const router = useRouter();
+  const isMobile = useIsMobileLg();
   const { user } = useAuthStore();
   const [properties, setProperties] = useState<Property[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedArea, setSelectedArea] = useState("");
+  const [areaDraft, setAreaDraft] = useState("");
   const [selectedCity, setSelectedCity] = useState(
     searchParams.get("city") || "",
   );
@@ -140,7 +145,7 @@ function PropertiesContent() {
         setAreaOptions(
           places.map((p: any, i: number) => ({
             id: `${p.display_name}-${i}`,
-            text: p.area || p.display_name || "",
+            text: shortDisplayName(p.display_name) || p.area || "",
           })),
         );
       } catch {
@@ -152,22 +157,36 @@ function PropertiesContent() {
 
   const [showAreaSuggestions, setShowAreaSuggestions] = useState(false);
 
+  const activeAreaQuery = isMobile ? areaDraft : selectedArea;
+
   useEffect(() => {
-    if (!selectedArea.trim()) {
+    if (isMobile === null) return;
+    if (isMobile && !showAreaSuggestions) return;
+
+    if (!activeAreaQuery.trim()) {
       setAreaOptions([]);
-      setShowAreaSuggestions(false);
+      if (!isMobile) setShowAreaSuggestions(false);
       return;
     }
     const t = setTimeout(() => {
       setAreaSearching(true);
-      fetchAreaSuggestions(selectedArea).finally(() => setAreaSearching(false));
+      fetchAreaSuggestions(activeAreaQuery).finally(() =>
+        setAreaSearching(false),
+      );
     }, 200);
     return () => clearTimeout(t);
-  }, [selectedArea, selectedCity, fetchAreaSuggestions]);
+  }, [
+    activeAreaQuery,
+    selectedCity,
+    fetchAreaSuggestions,
+    isMobile,
+    showAreaSuggestions,
+  ]);
 
   useEffect(() => {
+    if (isMobile) return;
     if (areaOptions.length > 0) setShowAreaSuggestions(true);
-  }, [areaOptions.length]);
+  }, [areaOptions.length, isMobile]);
 
   useEffect(() => {
     const key = searchParams.toString();
@@ -489,9 +508,33 @@ function PropertiesContent() {
                     Area
                   </label>
                   <div className="relative">
+                    {/* Mobile: tap opens bottom sheet with search */}
+                    <button
+                      type="button"
+                      className="flex h-11 w-full items-center rounded-lg border border-input bg-background px-3 text-left text-sm lg:hidden"
+                      onClick={() => {
+                        setAreaDraft("");
+                        setAreaOptions([]);
+                        setShowAreaSuggestions(true);
+                      }}
+                    >
+                      <span
+                        className={
+                          selectedArea
+                            ? "truncate text-foreground"
+                            : "truncate text-muted-foreground"
+                        }
+                      >
+                        {selectedArea ||
+                          (selectedCity
+                            ? "e.g. Marathahalli, Koramangala"
+                            : "e.g. Marathahalli (Bangalore)")}
+                      </span>
+                    </button>
+                    {/* Desktop: type in field */}
                     <Input
                       type="text"
-                      className="h-11 bg-background pr-10 rounded-lg"
+                      className="hidden h-11 bg-background pr-10 rounded-lg lg:block"
                       placeholder={
                         selectedCity
                           ? "e.g. Marathahalli, Koramangala"
@@ -510,34 +553,39 @@ function PropertiesContent() {
                         setTimeout(() => setShowAreaSuggestions(false), 150)
                       }
                     />
-                    {areaSearching && (
-                      <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-muted-foreground" />
+                    {areaSearching && !isMobile && (
+                      <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-muted-foreground hidden lg:block" />
                     )}
-                    {showAreaSuggestions && areaOptions.length > 0 && (
-                      <ul className="absolute z-20 left-0 right-0 mt-1 bg-popover border border-border rounded-lg shadow-lg max-h-52 overflow-y-auto py-1">
-                        {areaOptions.map((area) => (
-                          <li
-                            key={area.id}
-                            className="px-3 py-2 cursor-pointer hover:bg-accent/50 text-sm transition-colors"
-                            onMouseDown={(e) => {
-                              e.preventDefault();
-                              setSelectedArea(area.text);
-                              setAreaOptions([]);
-                              setShowAreaSuggestions(false);
-                              if (!selectedCity)
-                                setSelectedCity(defaultSearchCity);
-                            }}
-                          >
-                            {area.text}
-                            {(selectedCity || defaultSearchCity) && (
-                              <span className="ml-2 text-xs text-muted-foreground">
-                                {selectedCity || defaultSearchCity}
-                              </span>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                    <AreaSearchSuggestions
+                      open={showAreaSuggestions}
+                      onOpenChange={(open) => {
+                        setShowAreaSuggestions(open);
+                        if (!open) {
+                          setAreaDraft("");
+                          setAreaOptions([]);
+                        }
+                      }}
+                      query={isMobile ? areaDraft : selectedArea}
+                      onQueryChange={(v) => {
+                        if (isMobile) setAreaDraft(v);
+                        else setSelectedArea(v);
+                      }}
+                      options={areaOptions}
+                      loading={areaSearching}
+                      cityLabel={selectedCity || defaultSearchCity}
+                      title="Search area"
+                      placeholder={
+                        selectedCity
+                          ? `Area in ${selectedCity}`
+                          : "Area or locality…"
+                      }
+                      onSelect={(area) => {
+                        setSelectedArea(area.text);
+                        setAreaDraft("");
+                        setAreaOptions([]);
+                        if (!selectedCity) setSelectedCity(defaultSearchCity);
+                      }}
+                    />
                   </div>
                 </div>
                 {/* Filters */}

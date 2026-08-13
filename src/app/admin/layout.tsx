@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   Home,
   Flag,
+  PlusCircle,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -23,6 +24,7 @@ const navItems = [
   { name: 'Overview', href: '/admin', icon: LayoutDashboard },
   { name: 'Users', href: '/admin/users', icon: Users },
   { name: 'Properties', href: '/admin/properties', icon: Building2 },
+  { name: 'Add Property', href: '/admin/properties/new', icon: PlusCircle },
   { name: 'Reports', href: '/admin/reports', icon: Flag },
   { name: 'Verifications', href: '/admin/verify', icon: CheckCircle2 },
 ]
@@ -107,7 +109,12 @@ export default function AdminLayout({
 
           <nav className="flex-1 space-y-1">
             {navItems.map((item) => {
-              const isActive = pathname === item.href
+              const isActive =
+                item.href === '/admin/properties/new'
+                  ? pathname.startsWith('/admin/properties/new')
+                  : item.href === '/admin/properties'
+                    ? pathname === '/admin/properties'
+                    : pathname === item.href
               return (
                 <Link
                   key={item.name}

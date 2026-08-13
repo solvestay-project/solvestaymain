@@ -34,7 +34,13 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (existingReveal) {
-      // Fetch owner name if needed
+      // Prefer listing-level owner contact when present (admin-created listings)
+      const { data: propertyContact } = await supabaseAdmin
+        .from('properties')
+        .select('owner_name, owner_phone')
+        .eq('id', propertyIdValue)
+        .single()
+
       const { data: ownerProfile } = await supabaseAdmin
         .from('profiles')
         .select('full_name')
@@ -48,7 +54,7 @@ export async function POST(request: NextRequest) {
           phone: existingReveal.revealed_phone,
           email: existingReveal.revealed_email,
           whatsapp: existingReveal.revealed_whatsapp,
-          name: ownerProfile?.full_name || null
+          name: propertyContact?.owner_name || ownerProfile?.full_name || null
         }
       })
     }
@@ -81,7 +87,7 @@ export async function POST(request: NextRequest) {
 
     const { data: property, error: propError } = await supabaseAdmin
       .from('properties')
-      .select('owner_id, listing_availability')
+      .select('owner_id, listing_availability, owner_name, owner_phone')
       .eq('id', propertyIdValue)
       .single()
 
@@ -110,6 +116,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Owner profile not found' }, { status: 404 })
     }
 
+    const revealedPhone = property.owner_phone || ownerProfile.phone
+    const revealedName = property.owner_name || ownerProfile.full_name
+    const revealedWhatsapp = property.owner_phone || ownerProfile.whatsapp_number
+
     const { error: revealError } = await supabaseAdmin
       .from('contact_reveals')
       .insert({
@@ -117,9 +127,9 @@ export async function POST(request: NextRequest) {
         property_id: propertyIdValue,
         owner_id: property.owner_id,
         subscription_id: subscription.id,
-        revealed_phone: ownerProfile.phone,
+        revealed_phone: revealedPhone,
         revealed_email: ownerProfile.email,
-        revealed_whatsapp: ownerProfile.whatsapp_number,
+        revealed_whatsapp: revealedWhatsapp,
         revealed_at: new Date().toISOString()
       })
 
@@ -150,10 +160,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       contact: {
-        phone: ownerProfile.phone,
+        phone: revealedPhone,
         email: ownerProfile.email,
-        whatsapp: ownerProfile.whatsapp_number,
-        name: ownerProfile.full_name
+        whatsapp: revealedWhatsapp,
+        name: revealedName
       },
       contacts_remaining: subscription.contacts_limit === -1 
         ? -1 

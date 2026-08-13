@@ -1,8 +1,8 @@
 import Link from "next/link";
 import {
   Home,
-  Facebook,
-  Twitter,
+  // Facebook,
+  // Twitter,
   Instagram,
   Linkedin,
   Mail,
@@ -30,7 +30,7 @@ export function Footer() {
               with verified property owners.
             </p>
             <div className="flex gap-4">
-              <a
+              {/* <a
                 href="#"
                 className="p-2 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"
                 aria-label="Facebook"
@@ -43,7 +43,7 @@ export function Footer() {
                 aria-label="Twitter"
               >
                 <Twitter className="w-4 h-4" />
-              </a>
+              </a> */}
               <a
                 href="#"
                 className="p-2 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-colors"

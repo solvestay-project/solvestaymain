@@ -2,6 +2,6 @@
 
 import { PropertyListingWizard } from "@/components/property/PropertyListingWizard";
 
-export default function NewPropertyPage() {
-  return <PropertyListingWizard mode="owner" />;
+export default function AdminNewPropertyPage() {
+  return <PropertyListingWizard mode="admin" />;
 }

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Check, ChevronsUpDown, MapPin, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, shortDisplayName } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -200,11 +200,13 @@ export function HomeCitySelect({
                         All Cities
                       </CommandItem>
                       {apiCities.map((place, idx) => {
-                        const cityLabel = place.city || place.display_name;
+                        const label = shortDisplayName(place.display_name);
+                        const cityLabel =
+                          place.city || label || place.display_name;
                         return (
                           <CommandItem
                             key={`${place.display_name}-${idx}`}
-                            value={place.display_name}
+                            value={label || place.display_name}
                             onSelect={() => selectCity(cityLabel)}
                           >
                             <Check
@@ -215,9 +217,7 @@ export function HomeCitySelect({
                                   : "opacity-0",
                               )}
                             />
-                            <span className="truncate">
-                              {place.display_name}
-                            </span>
+                            <span className="truncate">{label}</span>
                             {place.state && (
                               <span className="ml-2 text-xs text-muted-foreground truncate">
                                 {place.state}
