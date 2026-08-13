@@ -12,7 +12,7 @@ const CONTACT_EMAIL = "solvestay@gmail.com";
 
 export function Footer() {
   return (
-    <footer className="bg-background border-t border-border/60">
+    <footer className="bg-background hidden lg:block border-t border-border/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           <div>
@@ -149,7 +149,7 @@ export function Footer() {
             <h3 className="font-semibold mb-6">Contact us</h3>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
-                <Mail className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                <Mail className="w-5 h-5 text-primary mt-0.5 shrink-0" />
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
                   className="text-muted-foreground hover:text-primary text-sm transition-colors break-all"

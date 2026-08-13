@@ -309,7 +309,7 @@ export default function HomePageClient() {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <section className="relative flex min-h-[auto] flex-col justify-center overflow-x-clip overflow-y-visible lg:min-h-[92vh]">
+      <section className="relative flex  min-h-auto flex-col justify-center overflow-x-clip overflow-y-visible lg:min-h-[92vh]">
         <div className="absolute inset-0">
           <Image
             src={HOME_HERO_IMAGE}
@@ -322,17 +322,17 @@ export default function HomePageClient() {
           <div className="absolute inset-0 bg-black/55" aria-hidden />
         </div>
 
-        <div className="relative z-10 mx-auto w-full min-w-0 max-w-[120rem] px-4 pt-24 pb-10 sm:px-6 sm:pb-14 lg:px-12 lg:pt-28 lg:pb-36">
+        <div className="relative z-10 mx-auto w-full min-w-0  max-w-480 px-4 pt-24 pb-10 sm:px-6 sm:pb-14 lg:px-12 lg:pt-28 lg:pb-36">
           <motion.div
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
             className="mx-auto w-full min-w-0 max-w-6xl text-center"
           >
-            <motion.div variants={fadeIn} className="hidden lg:block">
+            <motion.div variants={fadeIn}>
               <Badge
                 variant="secondary"
-                className="mb-6 px-4 py-2 text-sm font-medium border border-white/25 bg-white/10 text-white backdrop-blur-md shadow-sm"
+                className="mb-4 px-4 py-2 text-sm font-medium border border-white/25 bg-white/10 text-white backdrop-blur-md shadow-sm lg:mb-6"
               >
                 <Sparkles className="w-4 h-4 mr-2 text-accent" />
                 Zero Brokerage Property Platform
@@ -358,7 +358,7 @@ export default function HomePageClient() {
 
             <motion.p
               variants={fadeIn}
-              className="mb-6 hidden text-lg text-white/85 max-w-3xl mx-auto sm:text-xl lg:mb-10 lg:block"
+              className="mb-6 text-base text-white/85 max-w-3xl mx-auto sm:text-lg lg:mb-10 lg:text-xl"
             >
               Connect directly with property owners. No brokers, no hidden fees.
               Get owner contact for just{" "}
@@ -370,7 +370,7 @@ export default function HomePageClient() {
               className="mx-auto box-border w-full min-w-0 max-w-5xl rounded-2xl bg-white p-2 shadow-2xl ring-1 ring-black/5 sm:rounded-3xl sm:p-2.5 lg:rounded-full"
             >
               <div className="flex min-w-0 flex-col gap-2 overflow-hidden rounded-xl bg-white sm:rounded-2xl lg:flex-row lg:items-stretch lg:gap-0 lg:divide-x lg:divide-border lg:rounded-none lg:overflow-visible lg:bg-transparent">
-                <div className="flex w-full min-w-0 shrink-0 items-center px-2 py-1 lg:w-[13.5rem] lg:px-3 lg:py-0">
+                <div className="flex w-full min-w-0 shrink-0 items-center px-2 py-1  lg:w-54 lg:px-3 lg:py-0">
                   <HomeCitySelect
                     value={selectedCity}
                     onChange={setSelectedCity}
@@ -456,7 +456,7 @@ export default function HomePageClient() {
                 <div className="flex w-full min-w-0 shrink-0 items-stretch px-2 pb-1 lg:w-auto lg:p-0">
                   <Button
                     size="lg"
-                    className="h-12 w-full rounded-xl px-8 shadow-md sm:h-14 lg:w-auto lg:min-w-[10.5rem] lg:rounded-full"
+                    className="h-12 w-full rounded-xl px-8 shadow-md sm:h-14 lg:w-auto lg:min-w-42  lg:rounded-full"
                     onClick={() => handleSearch()}
                   >
                     <Search className="w-5 h-5 mr-2" />
@@ -470,9 +470,7 @@ export default function HomePageClient() {
               variants={fadeIn}
               className="mx-auto mt-4 w-full min-w-0 max-w-5xl space-y-3 text-center lg:mt-6"
             >
-              <p className="hidden text-sm text-white/80 lg:block">
-                Popular in Bangalore:
-              </p>
+              <p className="text-sm text-white/80">Popular in Bangalore:</p>
               <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:flex-wrap lg:justify-center lg:overflow-visible lg:px-0.5 lg:pb-0">
                 {popularBangaloreSearches.map((item) => (
                   <button
@@ -489,10 +487,10 @@ export default function HomePageClient() {
 
             <motion.div
               variants={fadeIn}
-              className="mt-16 hidden flex-wrap justify-center gap-6 px-2 pb-8 sm:gap-10 sm:pb-10 md:gap-14 lg:flex"
+              className="mt-10 flex flex-wrap justify-center gap-6 px-2 pb-8 sm:mt-16 sm:gap-10 sm:pb-10 md:gap-14"
             >
               {stats.map((stat) => (
-                <div key={stat.label} className="text-center min-w-[7rem]">
+                <div key={stat.label} className="text-center min-w-28">
                   <div className="text-3xl sm:text-4xl font-bold text-white tabular-nums">
                     {stat.value}
                   </div>
@@ -503,7 +501,7 @@ export default function HomePageClient() {
           </motion.div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 hidden h-24 bg-background pointer-events-none z-[1] lg:block" />
+        <div className="absolute bottom-0 left-0 right-0 hidden h-24 bg-background pointer-events-none z-1 lg:block" />
       </section>
 
       {/* App shortcuts — compact on mobile; fuller cards on desktop */}
@@ -541,7 +539,7 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      <section className="hidden py-20 lg:block lg:py-32">
+      <section className="py-12 sm:py-20 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -602,7 +600,7 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      <section className="hidden bg-muted/30 py-20 lg:block lg:py-32">
+      <section className="bg-muted/30 py-12 sm:py-20 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -665,7 +663,7 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      <section className="relative hidden overflow-hidden bg-muted/40 py-20 lg:block lg:py-32">
+      <section className="relative overflow-hidden bg-muted/40 py-12 sm:py-20 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             initial="hidden"
@@ -773,7 +771,7 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      <section className="hidden bg-muted/30 py-20 lg:block lg:py-32">
+      <section className="bg-muted/30 py-12 sm:py-20 lg:py-32">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial="hidden"
@@ -832,7 +830,7 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      <section className="hidden px-4 py-16 sm:px-6 lg:block lg:py-24">
+      <section className="px-4 py-12 sm:px-6 sm:py-16 lg:py-24">
         <div className="max-w-5xl mx-auto rounded-3xl bg-primary px-6 py-14 sm:px-12 sm:py-16 text-primary-foreground shadow-xl text-center">
           <motion.div
             initial="hidden"
@@ -882,30 +880,7 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      {/* Mobile-only compact footer links */}
-      <div className="border-t border-border/60 px-4 py-6 lg:hidden">
-        <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
-          <Link href="/about" className="hover:text-primary">
-            About
-          </Link>
-          <Link href="/faq" className="hover:text-primary">
-            FAQ
-          </Link>
-          <Link href="/pricing" className="hover:text-primary">
-            Pricing
-          </Link>
-          <Link href="/privacy" className="hover:text-primary">
-            Privacy
-          </Link>
-        </div>
-        <p className="mt-4 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Solvestay
-        </p>
-      </div>
-
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
+      <Footer />
     </div>
   );
 }

@@ -110,7 +110,7 @@ function desktopNavClass(isActive: boolean) {
 function bottomNavItemClass(isActive: boolean) {
   return cn(
     "flex flex-1 flex-col items-center justify-center gap-0.5 py-1.5 text-[10px] font-medium transition-colors min-w-0",
-    isActive ? "text-primary" : "text-muted-foreground",
+    isActive ? "text-white" : "text-white/60",
   );
 }
 
@@ -290,15 +290,7 @@ function NavbarContent() {
                 >
                   PG/Hostel
                 </Link>
-                <Link
-                  href="/ai-search"
-                  className={desktopNavClass(activeNav === "ai")}
-                >
-                  <span className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4" />
-                    AI Search
-                  </span>
-                </Link>
+
                 <Link
                   href="/pricing"
                   className={desktopNavClass(activeNav === "pricing")}
@@ -312,6 +304,21 @@ function NavbarContent() {
                   <span className="flex items-center gap-2">
                     <Gift className="w-4 h-4" />
                     Refer & Earn
+                  </span>
+                </Link>
+
+                <Link
+                  href="/ai-search"
+                  className={desktopNavClass(activeNav === "ai")}
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="ai-sparkle-wrap relative inline-flex h-7 w-7 items-center justify-center rounded-full">
+                      <Sparkles
+                        className="relative h-4 w-4 text-white animate-ai-sparkle"
+                        strokeWidth={2.25}
+                      />
+                    </span>
+                    AI Search
                   </span>
                 </Link>
                 {showPrioritySupportNav && (
@@ -418,7 +425,7 @@ function NavbarContent() {
                           {user.full_name && (
                             <p className="font-medium">{user.full_name}</p>
                           )}
-                          <p className="w-[200px] truncate text-sm text-muted-foreground">
+                          <p className=" w-50 truncate text-sm text-muted-foreground">
                             {user.email}
                           </p>
                           <Badge
@@ -570,7 +577,7 @@ function NavbarContent() {
         className="fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] inset-x-3 z-50 mx-auto max-w-lg lg:hidden"
         aria-label="Mobile primary"
       >
-        <div className="flex h-16 items-stretch rounded-2xl border border-border/70 bg-white/95 px-1 shadow-lg shadow-black/10 backdrop-blur-md ring-1 ring-black/5">
+        <div className="glass-bottom-nav flex h-16 items-stretch rounded-3xl px-1">
           {bottomItems.map((item) => {
             const Icon = item.icon;
             const active = isBottomActive(item.key);
@@ -582,16 +589,30 @@ function NavbarContent() {
               >
                 <span
                   className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-full transition-colors",
-                    active && "bg-primary/10",
+                    "relative flex h-8 w-8 items-center justify-center rounded-full transition-colors",
+                    item.key === "ai"
+                      ? "ai-sparkle-wrap"
+                      : active && "bg-white/15",
                   )}
                 >
-                  <Icon
-                    className={cn("h-5 w-5", active && "text-primary")}
-                    strokeWidth={active ? 2.25 : 1.75}
-                  />
+                  {item.key === "ai" ? (
+                    <Sparkles
+                      className="relative h-5 w-5 text-white animate-ai-sparkle"
+                      strokeWidth={2.5}
+                    />
+                  ) : (
+                    <Icon
+                      className={cn(
+                        "h-5 w-5",
+                        active ? "text-accent" : "text-white/85",
+                      )}
+                      strokeWidth={active ? 2.25 : 1.75}
+                    />
+                  )}
                 </span>
-                <span className="truncate w-full text-center">{item.label}</span>
+                <span className="truncate w-full text-center">
+                  {item.label}
+                </span>
               </Link>
             );
           })}

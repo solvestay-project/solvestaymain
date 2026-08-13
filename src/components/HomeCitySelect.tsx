@@ -21,15 +21,15 @@ import {
 /** Famous cities shown when dropdown opens (before search). Bangalore first for home search focus. */
 const FAMOUS_CITIES = [
   "Bangalore",
-  "Mumbai",
-  "Delhi",
-  "Hyderabad",
-  "Chennai",
-  "Pune",
-  "Kolkata",
-  "Ahmedabad",
-  "Jaipur",
-  "Lucknow",
+  // "Mumbai",
+  // "Delhi",
+  // "Hyderabad",
+  // "Chennai",
+  // "Pune",
+  // "Kolkata",
+  // "Ahmedabad",
+  // "Jaipur",
+  // "Lucknow",
 ];
 
 interface PlaceResult {
