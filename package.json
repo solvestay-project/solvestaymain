@@ -9,10 +9,18 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "cap:sync": "npx cap sync android",
+    "cap:open": "npx cap open android",
+    "cap:build:apk": "cd android && ./gradlew assembleDebug",
+    "cap:build:release": "cd android && ./gradlew assembleRelease",
+    "android:apk": "npx cap sync android && cd android && ./gradlew assembleDebug",
+    "android:release": "npx cap sync android && cd android && ./gradlew assembleRelease"
   },
   "dependencies": {
     "@babel/parser": "^7.28.5",
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/core": "^8.5.0",
     "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.2.2",
@@ -113,6 +121,7 @@
     "zustand": "^5.0.9"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.0",
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
