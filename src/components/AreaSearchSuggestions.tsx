@@ -87,7 +87,7 @@ export function AreaSearchSuggestions({
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent
           side="bottom"
-          className="z-[60] flex min-h-[600px] max-h-[85vh] flex-col gap-0 rounded-t-2xl p-0 pb-[env(safe-area-inset-bottom,0px)]"
+          className="z-[60] flex h-[75vh] max-h-[75vh] flex-col gap-0 rounded-t-2xl p-0 pb-[env(safe-area-inset-bottom,0px)]"
         >
           <div className="mx-auto mt-3 h-1.5 w-10 shrink-0 rounded-full bg-muted-foreground/25" />
           <SheetHeader className="px-4 pb-2 pt-3 text-left">

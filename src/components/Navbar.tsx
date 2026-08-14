@@ -109,8 +109,8 @@ function desktopNavClass(isActive: boolean) {
 
 function bottomNavItemClass(isActive: boolean) {
   return cn(
-    "flex flex-1 flex-col items-center justify-center gap-0.5 py-1.5 text-[10px] font-medium transition-colors min-w-0",
-    isActive ? "text-white" : "text-white/60",
+    "flex flex-1 flex-col items-center justify-center gap-0.5 py-1.5 text-[10px] font-medium transition-all min-w-0",
+    isActive ? "text-white" : "text-white/65",
   );
 }
 
@@ -589,10 +589,11 @@ function NavbarContent() {
               >
                 <span
                   className={cn(
-                    "relative flex h-8 w-8 items-center justify-center rounded-full transition-colors",
+                    "relative flex h-8 w-8 items-center justify-center rounded-full transition-all",
                     item.key === "ai"
                       ? "ai-sparkle-wrap"
-                      : active && "bg-white/15",
+                      : active &&
+                          "bg-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] ring-1 ring-white/25 backdrop-blur-sm",
                   )}
                 >
                   {item.key === "ai" ? (
