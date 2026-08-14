@@ -37,6 +37,7 @@ import { AMENITIES } from "@/lib/types";
 import { HomeCitySelect } from "@/components/HomeCitySelect";
 import { AreaSearchSuggestions } from "@/components/AreaSearchSuggestions";
 import { shortDisplayName } from "@/lib/utils";
+import { applyPropertyTypeBrowseFilter } from "@/lib/property-filters";
 import { useIsMobileLg } from "@/hooks/useIsMobileLg";
 import { toast } from "sonner";
 import {
@@ -267,9 +268,7 @@ function PropertiesContent() {
       if (area) {
         query = query.ilike("address", `%${area}%`);
       }
-      if (propType) {
-        query = query.eq("property_type", propType);
-      }
+      query = applyPropertyTypeBrowseFilter(query, propType || undefined);
       if (listingType) {
         query = query.eq("listing_type", listingType);
       }

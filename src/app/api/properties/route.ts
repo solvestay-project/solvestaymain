@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { applyPropertyTypeBrowseFilter } from "@/lib/property-filters";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -44,9 +45,10 @@ export async function GET(request: NextRequest) {
       query = query.eq("city", city);
     }
 
-    if (property_type && property_type !== "all") {
-      query = query.eq("property_type", property_type);
-    }
+    query = applyPropertyTypeBrowseFilter(
+      query,
+      property_type && property_type !== "all" ? property_type : undefined,
+    );
 
     if (listing_type && listing_type !== "all") {
       query = query.eq("listing_type", listing_type);

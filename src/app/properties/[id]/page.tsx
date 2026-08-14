@@ -25,7 +25,7 @@ import { toast } from "sonner";
 import { VisitScheduler } from "@/components/VisitScheduler";
 import { PropertyReportSection } from "@/components/PropertyReportSection";
 import { Panorama360Viewer } from "@/components/Panorama360Viewer";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import { PropertyImageGallery } from "@/components/PropertyImageGallery";
 import {
   Heart,
   Share2,
@@ -143,16 +143,6 @@ function OverviewRow({
     </div>
   );
 }
-
-/** Cycle tile shapes so the gallery reads as masonry while columns stay balanced. */
-const GALLERY_TILE_ASPECTS = [
-  "aspect-[4/5]",
-  "aspect-square",
-  "aspect-[3/4]",
-  "aspect-[5/4]",
-  "aspect-[4/3]",
-  "aspect-[2/3]",
-] as const;
 
 function createPropertySlug(p: Pick<Property, "title" | "city" | "state" | "property_type" | "bedrooms">) {
   const parts = [
@@ -647,68 +637,25 @@ export default function PropertyDetailPage({
             </div>
           )}
 
-          {/* Image gallery: responsive masonry — click any to open modal */}
+          {/* Image gallery: hero + grid with +more overlay */}
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-3">
+            <div className="mb-3">
               <span className="text-sm text-muted-foreground">
                 {images?.length ?? 0} photo{images?.length === 1 ? "" : "s"}
               </span>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="rounded-lg h-9"
-                  onClick={handleShare}
-                >
-                  <Share2 className="w-4 h-4 mr-1.5" />
-                  Share
-                </Button>
-                {!hideSaveFavorite && !blockPublicBuyer && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-lg h-9"
-                    onClick={handleFavorite}
-                  >
-                    <Heart
-                      className={`w-4 h-4 mr-1.5 ${isFavorite ? "fill-red-500 text-red-500" : ""}`}
-                    />
-                    Save
-                  </Button>
-                )}
-              </div>
             </div>
-            <ResponsiveMasonry
-              columnsCountBreakPoints={{ 350: 2, 640: 3, 1024: 4 }}
-              gutterBreakPoints={{ 350: "8px", 640: "12px", 1024: "12px" }}
-            >
-              <Masonry sequential>
-                {(images ?? []).map((src, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    className={`relative w-full overflow-hidden rounded-xl bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${GALLERY_TILE_ASPECTS[index % GALLERY_TILE_ASPECTS.length]}`}
-                    onClick={() => {
-                      setCurrentImageIndex(index);
-                      setIsGalleryOpen(true);
-                    }}
-                  >
-                    <Image
-                      src={src}
-                      alt={`${property.title} - ${index + 1}`}
-                      fill
-                      className="object-cover transition-transform duration-300 hover:scale-105"
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    />
-                    {index === 0 && (
-                      <span className="absolute bottom-2 left-2 rounded-md bg-black/50 backdrop-blur px-2 py-0.5 text-xs font-medium text-white">
-                        Cover
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </Masonry>
-            </ResponsiveMasonry>
+            <PropertyImageGallery
+              images={images ?? []}
+              title={property.title}
+              onImageClick={(index) => {
+                setCurrentImageIndex(index);
+                setIsGalleryOpen(true);
+              }}
+              onShare={handleShare}
+              onFavorite={handleFavorite}
+              isFavorite={isFavorite}
+              showSave={!hideSaveFavorite && !blockPublicBuyer}
+            />
           </div>
 
           <div

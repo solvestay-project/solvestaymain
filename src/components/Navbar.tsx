@@ -44,6 +44,7 @@ import {
 
 type NavKey =
   | "home"
+  | "post"
   | "properties"
   | "rent"
   | "buy"
@@ -63,6 +64,9 @@ function getActiveNavKey(
 ): NavKey | null {
   if (pathname === "/") return "home";
   if (pathname === "/ai-search") return "ai";
+  if (pathname === "/auth/register" && searchParams.get("role") === "owner") {
+    return "post";
+  }
   if (pathname === "/pricing") return "pricing";
   if (pathname === "/refer-and-earn") return "refer";
   if (pathname === "/support/priority") return "priority";
@@ -110,7 +114,7 @@ function desktopNavClass(isActive: boolean) {
 function bottomNavItemClass(isActive: boolean) {
   return cn(
     "flex flex-1 flex-col items-center justify-center gap-0.5 py-1.5 text-[10px] font-medium transition-all min-w-0",
-    isActive ? "text-white" : "text-white/65",
+    isActive ? "text-accent font-semibold" : "text-white/72",
   );
 }
 
@@ -264,12 +268,12 @@ function NavbarContent() {
             {!hideCustomerBrowseNav && (
               <nav className="hidden lg:flex items-center gap-1">
                 <Link
-                  href="/properties"
-                  className={desktopNavClass(activeNav === "properties")}
+                  href="/auth/register?role=owner"
+                  className={desktopNavClass(activeNav === "post")}
                 >
                   <span className="flex items-center gap-2">
-                    <Search className="w-4 h-4" />
-                    Find Properties
+                    <Plus className="w-4 h-4" />
+                    Post Properties
                   </span>
                 </Link>
                 <Link
@@ -593,7 +597,7 @@ function NavbarContent() {
                     item.key === "ai"
                       ? "ai-sparkle-wrap"
                       : active &&
-                          "bg-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] ring-1 ring-white/25 backdrop-blur-sm",
+                          "bg-white/18 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] ring-1 ring-white/28 backdrop-blur-sm",
                   )}
                 >
                   {item.key === "ai" ? (
@@ -605,7 +609,7 @@ function NavbarContent() {
                     <Icon
                       className={cn(
                         "h-5 w-5",
-                        active ? "text-accent" : "text-white/85",
+                        active ? "text-accent" : "text-white/88",
                       )}
                       strokeWidth={active ? 2.25 : 1.75}
                     />

@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Property } from '@/lib/types'
 import type { DreamHomeCriteria } from './dream-home-schema'
+import { applyPropertyTypeBrowseFilter } from '@/lib/property-filters'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -42,8 +43,16 @@ export async function fetchCandidateProperties(
     query = query.gte('bedrooms', lo).lte('bedrooms', hi)
   }
 
-  if (criteria.property_types?.length) {
-    query = query.in('property_type', criteria.property_types)
+  if (criteria.property_types?.length === 1) {
+    query = applyPropertyTypeBrowseFilter(query, criteria.property_types[0])
+  } else if (criteria.property_types?.length) {
+    const types = criteria.property_types.filter((t) => t !== "pg")
+    query = applyPropertyTypeBrowseFilter(query, undefined)
+    if (types.length) {
+      query = query.in("property_type", types)
+    }
+  } else {
+    query = applyPropertyTypeBrowseFilter(query, undefined)
   }
 
   const { data, error } = await query

@@ -63,6 +63,11 @@ function RegisterContent() {
   );
 
   useEffect(() => {
+    if (roleParam === "owner") setSelectedRole("owner");
+    else if (roleParam === "customer") setSelectedRole("customer");
+  }, [roleParam]);
+
+  useEffect(() => {
     const fromUrl = refParam?.trim().toUpperCase();
     if (fromUrl) {
       setReferralCode(fromUrl);
