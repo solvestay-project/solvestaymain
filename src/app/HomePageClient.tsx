@@ -24,6 +24,7 @@ import {
   Map,
   Phone,
   CreditCard,
+  Key,
 } from "lucide-react";
 import {
   Accordion,
@@ -206,6 +207,10 @@ const stats = [
 const HOME_HERO_IMAGE =
   "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2400&q=80";
 
+const SELL_CTA_BG_IMAGE =
+  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=80";
+
+/* Key Bangalore areas — kept for reference
 const bangaloreAreas = [
   { name: "Whitefield", tag: "Key area", search: "Whitefield" },
   { name: "Outer Ring Road (ORR)", tag: "Key area", search: "ORR" },
@@ -214,6 +219,7 @@ const bangaloreAreas = [
   { name: "Devanahalli", tag: "Emerging", search: "Devanahalli" },
   { name: "Sarjapur Road", tag: "Emerging", search: "Sarjapur" },
 ];
+*/
 
 export default function HomePageClient() {
   const router = useRouter();
@@ -606,6 +612,75 @@ export default function HomePageClient() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
+            variants={fadeIn}
+          >
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 sm:mb-8">
+              Have a property to sell?
+            </h2>
+
+            <div
+              className="relative overflow-hidden rounded-2xl border border-primary/25 shadow-lg min-h-[220px] sm:min-h-[240px]"
+            >
+              <Image
+                src={SELL_CTA_BG_IMAGE}
+                alt=""
+                fill
+                className="object-cover object-center"
+                sizes="(max-width: 1280px) 100vw, 1280px"
+              />
+              <div
+                className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/82 to-primary/70"
+                aria-hidden
+              />
+              <div
+                className="pointer-events-none absolute -left-10 -top-10 h-40 w-40 rounded-full bg-accent/20 blur-3xl"
+                aria-hidden
+              />
+              <div
+                className="pointer-events-none absolute -bottom-8 -right-8 h-48 w-48 rounded-full bg-accent/15 blur-3xl"
+                aria-hidden
+              />
+
+              <div
+                className="pointer-events-none absolute left-6 top-6 hidden sm:block"
+                aria-hidden
+              >
+                <Key className="h-8 w-8 text-accent/50" />
+              </div>
+              <div
+                className="pointer-events-none absolute right-6 top-6 hidden sm:block"
+                aria-hidden
+              >
+                <Building2 className="h-9 w-9 text-white/25" />
+              </div>
+
+              <div className="relative z-10 flex flex-col items-center justify-center px-6 py-10 sm:py-14 text-center">
+                <p className="max-w-lg text-lg sm:text-xl font-medium text-white mb-6 sm:mb-8 drop-shadow-sm">
+                  List your property & connect with clients faster!
+                </p>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="h-12 min-w-[200px] rounded-xl border-2 border-white/90 bg-white/10 text-white font-semibold shadow-md backdrop-blur-sm hover:bg-white hover:text-primary"
+                >
+                  <Link href="/auth/register?role=owner">
+                    Sell your property
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Explore Properties in Key Bangalore Areas — replaced by owner CTA above
+      <section className="bg-muted/30 py-12 sm:py-20 lg:py-32">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
             variants={staggerContainer}
             className="text-center mb-16"
           >
@@ -662,6 +737,7 @@ export default function HomePageClient() {
           </motion.div>
         </div>
       </section>
+      */}
 
       <section className="relative overflow-hidden bg-muted/40 py-12 sm:py-20 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

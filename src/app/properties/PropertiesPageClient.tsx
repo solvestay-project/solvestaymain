@@ -57,6 +57,10 @@ import {
   Map as MapIcon,
 } from "lucide-react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
+
+const PROPERTIES_HERO_IMAGE =
+  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2400&q=80";
 
 const PropertyMap = dynamic(
   () => import("@/components/PropertyMap").then((mod) => mod.PropertyMap),
@@ -468,18 +472,32 @@ function PropertiesContent() {
       <Navbar />
 
       <div className="pt-20">
-        <div className="bg-primary/5 py-10 sm:py-12 border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-3xl sm:text-4xl font-bold mb-2">
+        <div className="relative overflow-hidden border-b py-10 sm:py-12">
+          <div className="absolute inset-0">
+            <Image
+              src={PROPERTIES_HERO_IMAGE}
+              alt=""
+              fill
+              priority
+              className="object-cover object-center"
+              sizes="100vw"
+            />
+            <div
+              className="absolute inset-0 bg-primary/82"
+              aria-hidden
+            />
+          </div>
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-white drop-shadow-sm">
               Find Your Perfect Property
             </h1>
-            <p className="text-muted-foreground mb-6 sm:mb-8">
+            <p className="text-white/85 mb-6 sm:mb-8">
               Browse through {filteredProperties.length} properties across India
             </p>
 
             {/* Search card – aligned row on desktop, stacked on mobile */}
             <form
-              className="rounded-2xl border bg-card/80 shadow-sm p-4 sm:p-5"
+              className="rounded-2xl border border-white/25 bg-white/95 shadow-lg backdrop-blur-sm p-4 sm:p-5"
               onSubmit={(e) => {
                 e.preventDefault();
                 applySearch();
