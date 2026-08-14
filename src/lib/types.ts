@@ -374,7 +374,7 @@ export const SUBSCRIPTION_PLANS = {
   day: { 
     id: 'day',
     name: 'Lite Plan (2-Day)', 
-    price: 49, 
+    price: 99, 
     contacts: 5, 
     duration: 2,
     description: '48 hours access',
@@ -384,20 +384,20 @@ export const SUBSCRIPTION_PLANS = {
     id: 'weekly',
     name: 'Relax Plan (Weekly)', 
     price: 150, 
-    contacts: 20, 
+    contacts: 15,
     duration: 7,
     description: '7 days access',
-    features: ['20 property contacts', 'Advanced filters', 'Chat with owners', 'Save favorites', '7 days access', 'Priority support', 'AI Dream Home Search']
+    features: ['15 property contacts', 'Advanced filters', 'Chat with owners', 'Save favorites', '7 days access', 'Priority support', 'AI Dream Home Search']
   },
   monthly: { 
     id: 'monthly',
     name: 'Freedom Plan (Monthly)', 
     price: 499, 
-    contacts: 20, 
+    contacts: 25,
     duration: 30,
     description: '30 days access',
     features: [
-      '20 property contacts',
+      '25 property contacts',
       'Advanced filters',
       'Priority support',
       'Save favorites',

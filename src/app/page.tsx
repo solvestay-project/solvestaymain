@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title:
     "Zero Brokerage Flats, Houses & PGs for Rent in India | Solvestay",
   description:
-    "Find verified houses, flats, PGs and commercial properties for rent with zero brokerage. Connect directly with property owners in top Indian cities and get owner contact for just ₹49.",
+    "Find verified houses, flats, PGs and commercial properties for rent with zero brokerage. Connect directly with property owners in top Indian cities and get owner contact for just ₹99.",
   openGraph: {
     title:
       "Solvestay – Find Your Perfect Home with Zero Brokerage",

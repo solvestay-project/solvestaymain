@@ -43,7 +43,7 @@ const plans = [
   {
     id: "day",
     name: "Lite Plan (2-Day)",
-    price: 49,
+    price: 99,
     period: "2 days",
     description: "Perfect for quick property searches",
     icon: Send,
@@ -66,7 +66,7 @@ const plans = [
     description: "Best for serious property hunters",
     icon: Crown,
     features: [
-      { text: "20 property contacts", included: true },
+      { text: "15 property contacts", included: true },
       { text: "Advanced search filters", included: true },
       { text: "Chat with owners", included: true },
       { text: "7 days access", included: true },
@@ -84,7 +84,7 @@ const plans = [
     description: "Best value for a full month of searching",
     icon: Gem,
     features: [
-      { text: "20 property contacts", included: true },
+      { text: "25 property contacts", included: true },
       { text: "Advanced search filters", included: true },
       { text: "Priority support", included: true },
       { text: "Save favorites", included: true },

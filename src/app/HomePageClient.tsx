@@ -113,7 +113,7 @@ const features = [
     icon: CreditCard,
     title: "Affordable Plans",
     description:
-      "Access owner contacts for just ₹49/day. No hidden fees or commissions.",
+      "Access owner contacts for just ₹99/day. No hidden fees or commissions.",
   },
 ];
 
@@ -126,7 +126,7 @@ const faqs = [
   {
     question: "Is there any brokerage or commission?",
     answer:
-      "No. We charge zero brokerage. You only pay for a short-term pass (from ₹49 for 2 days) to reveal owner contacts. Once you have the contact, you deal directly with the owner.",
+      "No. We charge zero brokerage. You only pay for a short-term pass (from ₹99 for 2 days) to reveal owner contacts. Once you have the contact, you deal directly with the owner.",
   },
   {
     question: "How do I contact a property owner?",
@@ -153,7 +153,7 @@ const faqs = [
 const pricingPlans = [
   {
     name: "Lite Plan (2-Day)",
-    price: "49",
+    price: "99",
     period: "2 days",
     features: [
       "5 property contacts",
@@ -169,7 +169,7 @@ const pricingPlans = [
     price: "150",
     period: "week",
     features: [
-      "20 property contacts",
+      "15 property contacts",
       "Advanced filters",
       "Priority support",
       "Save favorites",
@@ -183,7 +183,7 @@ const pricingPlans = [
     price: "499",
     period: "month",
     features: [
-      "20 property contacts",
+      "25 property contacts",
       "Advanced search filters",
       "Priority support",
       "Save favorites",
@@ -362,7 +362,7 @@ export default function HomePageClient() {
             >
               Connect directly with property owners. No brokers, no hidden fees.
               Get owner contact for just{" "}
-              <span className="text-accent font-semibold">₹49</span>.
+              <span className="text-accent font-semibold">₹99</span>.
             </motion.p>
 
             <motion.div
