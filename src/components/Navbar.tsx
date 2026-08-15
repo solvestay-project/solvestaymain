@@ -114,7 +114,7 @@ function desktopNavClass(isActive: boolean) {
 function bottomNavItemClass(isActive: boolean) {
   return cn(
     "flex flex-1 flex-col items-center justify-center gap-0.5 py-1.5 text-[10px] font-medium transition-all min-w-0",
-    isActive ? "text-accent font-semibold" : "text-white/72",
+    isActive ? "text-accent font-semibold" : "text-white/78",
   );
 }
 
@@ -597,7 +597,7 @@ function NavbarContent() {
                     item.key === "ai"
                       ? "ai-sparkle-wrap"
                       : active &&
-                          "bg-white/18 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] ring-1 ring-white/28 backdrop-blur-sm",
+                          "bg-white/16 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] ring-1 ring-white/28 backdrop-blur-md",
                   )}
                 >
                   {item.key === "ai" ? (
